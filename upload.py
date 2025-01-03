@@ -1,3 +1,42 @@
+import numpy as np
+import pandas as pd
+import re
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Alignment, PatternFill, Font, Border, Side
+from openpyxl.utils import get_column_letter
+from datetime import datetime
+
+output_path = r"C:\Users\MUHAMMAD NOUKHEZ\Downloads\Output\April_2023_Report.xlsx"
+file_path = r"C:\Users\MUHAMMAD NOUKHEZ\Downloads\Input\April_2023_Report_Format.xlsx"
+
+icds_sheet = pd.read_excel(file_path, sheet_name='Row_sheet')
+
+# Define the initial balance and the reset date
+initial_rice_balance = 718.800
+rice_reset_date = 0 
+new_rice_balance = 0
+current_rice_balance = initial_rice_balance
+
+# Define the initial balance and the reset date
+initial_Daal_balance =132.734 
+daal_reset_date = 0
+new_Daal_balance = 0
+current_Daal_balance = initial_Daal_balance
+
+# Define the initial balance and the reset date
+initial_Oil_balance = 14.688
+oil_reset_date = 0
+new_Oil_balance = 0
+current_Oil_balance = initial_Oil_balance
+
+# Define the initial balance and the reset date
+initial_Salt_balance = 14.688
+salt_reset_date = 0
+new_Salt_balance = 0
+current_Salt_balance = initial_Salt_balance
+
+
 
 # Regular expression to extract month and year
 match = re.search(r'\\([A-Za-z]+)_(\d{4})_', file_path)
@@ -420,3 +459,4 @@ for col_idx in range(3, ws.max_column + 1):
     
 # Save the workbook
 wb.save(output_path)
+
