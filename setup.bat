@@ -20,6 +20,7 @@ echo Creating .gitignore file...
 
 (
     echo .venv/
+    echo .venv/**/__init__.py
     echo __pycache__/
     echo *.pyc
     echo *.pyo
