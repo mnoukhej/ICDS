@@ -7,8 +7,13 @@ echo .venv created
 call .venv\Scripts\activate.bat
 echo .venv activated.
 
+echo Upgrading pip...
 python.exe -m pip install --upgrade pip
 echo pip upgrade -- done
+
+echo Installing ipykernel...
+pip install ipykernel
+
 
 echo Installing dependencies...
 pip install -r requirements.txt
