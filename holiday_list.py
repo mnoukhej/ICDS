@@ -2,6 +2,13 @@
 
 # List of holidays
 holidays = {
+    
+    # ----------------------------------------------------------------
+    #                           2026
+    # ----------------------------------------------------------------    
+    
+    
+    
     # ----------------------------------------------------------------
     #                           2025
     # ----------------------------------------------------------------
@@ -9,12 +16,12 @@ holidays = {
     '14 March 2025': 'Doljatra',
     '31 March 2025': 'Id-Ul-Fitre',
     '15 April 2025': 'Bengali New Year’s Day',
-    '7 June 2025': 'Id-Ud-Zoha',
+    '07 June 2025': 'Id-Ud-Zoha',
     '15 August 2025': 'Independence Day',
     '29 September 2025': 'Durga Puja (Saptami)',
     '30 September 2025': 'Durga Puja (Ashtami)',
-    '1 October 2025': 'Durga Puja (Nabami)',
-    '2 October 2025': 'Durga Puja (Dashami)',
+    '01 October 2025': 'Durga Puja (Nabami)',
+    '02 October 2025': 'Durga Puja (Dashami)',
     '20 October 2025': 'Kali Puja',
     '23 October 2025': 'Bhatirdwitiya',
     '25 December 2025': 'Christmas Day',
