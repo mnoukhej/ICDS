@@ -1,3 +1,7 @@
+# ---------------------------
+# Generate Format
+# ---------------------------
+
 import os
 from Main_Func import Format_Generator
 
@@ -40,6 +44,8 @@ if __name__ == "__main__":
     print("ICDS Report Format Generator")
     print("----------------------------")
     
+    # folder_location = r"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format"
+    output_folder_location = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads"
     month, year, polio_day = get_user_input()
     
     if polio_day is not None:
@@ -47,5 +53,5 @@ if __name__ == "__main__":
     else:
         print(f"\nGenerating data for {month}/{year} without Polio campaign...")
     
-    Format_Generator(month, year, polio_day)
+    Format_Generator(month, year, polio_day, output_folder_location)
     print("Data generation complete!")

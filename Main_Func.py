@@ -12,7 +12,7 @@ from holiday_list import holidays
 
 
 # Format_Generator function to create the report format
-def Format_Generator(month, year, polio_day):
+def Format_Generator(month, year, polio_day, folder_location):
     def generate_day_names(month, year):
         # Generate all dates in the given month and year
         date_range = pd.date_range(start=f'{year}-{month:02d}-01', end=f'{year}-{month:02d}-{pd.Timestamp(year, month, 1).days_in_month}')
@@ -75,7 +75,9 @@ def Format_Generator(month, year, polio_day):
     # Generate dynamic filename based on month and year
     month_name = pd.Timestamp(year, month, 1).strftime('%B')
     output_filename = f"{month_name}_{year}_Report_Format.xlsx"
-    output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format\{output_filename}"
+    output_path = os.path.join(folder_location, output_filename)
+
+    # output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format\{output_filename}"
     # output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads\{output_filename}"
 
 
@@ -204,7 +206,7 @@ def Format_Generator(month, year, polio_day):
 
 
 # Report_Generator_py function to generate the report based on the format
-def Report_Generator_py(file_path):
+def Report_Generator_py(file_path, folder_location):
 
     # ---------------------------
     # 1️⃣ Validate Input File
@@ -219,9 +221,10 @@ def Report_Generator_py(file_path):
     if match:
         month_name, year = match.groups()
         output_filename = f"{month_name}_{year}_Report.xlsx"
-        output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report", output_filename)
+        output_path = os.path.join(folder_location, output_filename)
+        
         # output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Downloads", output_filename)
-    #     print("Generated Output Path:", output_path)
+        # print("Generated Output Path:", output_path)
     else:
         print("Error: Could not extract month and year from the filename.")
 

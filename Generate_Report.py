@@ -1,3 +1,7 @@
+# ---------------------------
+# Generate Report
+# ---------------------------
+
 import os
 import sys
 import time
@@ -15,7 +19,7 @@ def display_progress(progress):
     sys.stdout.write(f"\rProgress: [{bar}] {int(progress * 100)}%")
     sys.stdout.flush()
 
-def generate_report(file_path):
+def generate_report(file_path, output_folder_location):
     """Execute report generator with proper error handling and progress tracking."""
     try:
         print(f"=== ICDS Report Generator ===")
@@ -30,7 +34,7 @@ def generate_report(file_path):
             display_progress(i/10)
         
         # Actual report generation
-        Report_Generator_py(file_path)
+        Report_Generator_py(file_path, output_folder_location)
         
         end_time = time.time()
         processing_time = end_time - start_time
@@ -56,8 +60,10 @@ if __name__ == "__main__":
     # Hardcoded file path
     file_path = r"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format\July_2025_Report_Format.xlsx"
     
+    output_folder_location = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads"
+    
     # Execute with error handling
-    success = generate_report(file_path)
+    success = generate_report(file_path, output_folder_location)
     
     # Exit with appropriate status code
     sys.exit(0 if success else 1)
