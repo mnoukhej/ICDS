@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import calendar
+import shutil
+import os
 from Main_Func import Format_Generator, Report_Generator_py
 
 
@@ -59,11 +61,19 @@ class ICDSReportApp:
         year_cb.grid(row=1, column=1, pady=5)
         year_cb.bind("<<ComboboxSelected>>", lambda e: self.update_polio_sundays())
 
-        # Polio Checkbox
+        # Polio Checkbox (Initially Disabled)
         self.include_polio = tk.BooleanVar()
-        polio_check = tk.Checkbutton(frame, text="Include Polio Campaign", variable=self.include_polio,
-                                     command=self.toggle_polio_day, fg="white", bg="#1e1e1e", selectcolor="#1e1e1e")
-        polio_check.grid(row=2, column=0, columnspan=2, pady=5)
+        self.polio_check = tk.Checkbutton(
+            frame,
+            text="Polio Campaign",
+            variable=self.include_polio,
+            command=self.toggle_polio_day,
+            fg="white",
+            bg="#1e1e1e",
+            selectcolor="#1e1e1e",
+            state="disabled"
+        )
+        self.polio_check.grid(row=2, column=0, columnspan=2, pady=5)
 
         # Polio Day Selection (hidden initially)
         self.polio_day_label = tk.Label(frame, text="Polio Day (Sundays):", fg="white", bg="#1e1e1e")
@@ -89,22 +99,30 @@ class ICDSReportApp:
     def update_polio_sundays(self):
         """Update Polio day dropdown with all Sundays of the selected month/year."""
         try:
-            if not self.month_var.get() or not self.year_var.get():
+            month_selected = bool(self.month_var.get())
+            year_selected = bool(self.year_var.get())
+
+            if month_selected and year_selected:
+                self.polio_check.config(state="normal")
+            else:
+                self.polio_check.config(state="disabled")
+                self.include_polio.set(False)
+                self.toggle_polio_day()
+
+            if not month_selected or not year_selected:
                 return
 
             month_number = ["January", "February", "March", "April", "May", "June",
                             "July", "August", "September", "October", "November", "December"].index(self.month_var.get()) + 1
             year = int(self.year_var.get())
 
-            # Get all Sundays in month
-            sundays = []
-            for day in range(1, calendar.monthrange(year, month_number)[1] + 1):
-                if calendar.weekday(year, month_number, day) == 6:  # Sunday
-                    sundays.append(str(day))
+            sundays = [str(day) for day in range(1, calendar.monthrange(year, month_number)[1] + 1)
+                       if calendar.weekday(year, month_number, day) == 6]
 
             self.polio_day_cb['values'] = sundays
             if sundays:
                 self.polio_day_cb.current(0)
+
         except Exception as e:
             print("Error updating Sundays:", e)
 
@@ -126,10 +144,15 @@ class ICDSReportApp:
 
             polio_day = int(self.polio_day_var.get()) if self.include_polio.get() and self.polio_day_var.get() else None
 
-            folder_location = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads"
+            temp_folder = os.path.join(os.getcwd(), "temp_generated")
+            os.makedirs(temp_folder, exist_ok=True)
 
-            
-            Format_Generator(month_number, year, polio_day, folder_location)
+            Format_Generator(month_number, year, polio_day, temp_folder)
+
+            self.generated_file_path = None
+            for file in os.listdir(temp_folder):
+                self.generated_file_path = os.path.join(temp_folder, file)
+
             self.show_download_screen()
 
         except Exception as e:
@@ -149,32 +172,91 @@ class ICDSReportApp:
                   command=self.show_home).pack(pady=5, ipadx=10, ipady=5)
 
     def download_file(self):
-        # This should move/copy the generated file to user's chosen location
-        messagebox.showinfo("Download", "File download simulation complete!")
+        """Ask user for folder to save the generated file."""
+        if not hasattr(self, "generated_file_path") or not self.generated_file_path:
+            messagebox.showerror("Error", "No file generated to download.")
+            return
+
+        folder_location = filedialog.askdirectory(title="Select Download Location")
+        if not folder_location:
+            return
+
+        try:
+            dest_path = os.path.join(folder_location, os.path.basename(self.generated_file_path))
+            shutil.copy2(self.generated_file_path, dest_path)
+            messagebox.showinfo("Download", f"File saved to:\n{dest_path}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     # --------------------
-    # Generate Report Section
+    # Generate Report Section (Updated)
     # --------------------
     def show_generate_report(self):
         self.clear_window()
-        tk.Label(self.root, text="Generate Report", font=("Arial", 14, "bold"),
-                 fg="#ffae00", bg="#1e1e1e").pack(pady=20)
+        tk.Label(
+            self.root,
+            text="Generate Report",
+            font=("Arial", 14, "bold"),
+            fg="#ffae00",
+            bg="#1e1e1e"
+        ).pack(pady=20)
 
-        tk.Button(self.root, text="Select Report File", bg="#28a745", fg="white",
-                  command=self.select_file).pack(pady=10, ipadx=10, ipady=5)
+        self.report_file_path = None
 
-        tk.Button(self.root, text="Back", bg="#dc3545", fg="white",
-                  command=self.show_home).pack(pady=5, ipadx=10, ipady=5)
+        tk.Button(
+            self.root,
+            text="Upload Excel File",
+            bg="#d600a1",
+            fg="white",
+            font=("Arial", 12, "bold"),
+            command=self.select_file
+        ).pack(pady=10, ipadx=10, ipady=5)
+
+        self.generate_btn = tk.Button(
+            self.root,
+            text="Generate Report",
+            bg="#28a78d",
+            fg="white",
+            font=("Arial", 12, "bold"),
+            state="disabled",
+            command=self.generate_report_from_file
+        )
+        self.generate_btn.pack(pady=10, ipadx=10, ipady=5)
+
+        tk.Button(
+            self.root,
+            text="Back",
+            bg="#c9402f",
+            fg="white",
+            font=("Arial", 12, "bold"),
+            command=self.show_home
+        ).pack(pady=10, ipadx=10, ipady=5)
 
     def select_file(self):
-        output_folder_location = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads"
         file_path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
         if file_path:
-            try:
-                Report_Generator_py(file_path, output_folder_location)
-                messagebox.showinfo("Success", "Report generated successfully!")
-            except Exception as e:
-                messagebox.showerror("Error", str(e))
+            self.report_file_path = file_path
+            self.generate_btn.config(state="normal")
+
+    def generate_report_from_file(self):
+        if not self.report_file_path:
+            messagebox.showerror("Error", "Please upload an Excel file first.")
+            return
+
+        try:
+            temp_folder = os.path.join(os.getcwd(), "temp_generated_report")
+            os.makedirs(temp_folder, exist_ok=True)
+
+            Report_Generator_py(self.report_file_path, temp_folder)
+
+            self.generated_file_path = None
+            for file in os.listdir(temp_folder):
+                self.generated_file_path = os.path.join(temp_folder, file)
+
+            self.show_download_screen()
+
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
 
 # ----------------------
