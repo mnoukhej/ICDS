@@ -13,12 +13,35 @@ class ICDSReportApp:
         self.root.geometry("420x350")
         self.root.configure(bg="#1e1e1e")
 
+        # Clear temp folders before running
+        self.clear_temp_folders()
+
         self.show_home()
+
+    def clear_temp_folders(self):
+        """Remove temp folders if they exist."""
+        for folder in ["temp_generated", "temp_generated_report"]:
+            folder_path = os.path.join(os.getcwd(), folder)
+            if os.path.exists(folder_path):
+                try:
+                    shutil.rmtree(folder_path)
+                except Exception as e:
+                    print(f"Error clearing {folder}: {e}")
 
     def clear_window(self):
         """Remove all widgets from the current window."""
         for widget in self.root.winfo_children():
             widget.destroy()
+
+    def show_footer(self):
+        """Show footer on all screens."""
+        tk.Label(
+            self.root,
+            text="© 2025 ICDS Report Generator | Develop by Muhammad Noukhez",
+            font=("Arial", 8, "italic"),
+            fg="gray",
+            bg="#1e1e1e"
+        ).pack(side="bottom", pady=5)
 
     # --------------------
     # Screen 1: Home
@@ -33,6 +56,8 @@ class ICDSReportApp:
 
         tk.Button(self.root, text="View or Generate Reports", bg="#dc3545", fg="white", font=("Arial", 12),
                   command=self.show_generate_report).pack(pady=10, ipadx=10, ipady=5)
+
+        self.show_footer()
 
     # --------------------
     # Screen 2: Generate Format
@@ -57,11 +82,11 @@ class ICDSReportApp:
         # Year Selection
         tk.Label(frame, text="Select Year:", fg="white", bg="#1e1e1e").grid(row=1, column=0, sticky="e", pady=5)
         self.year_var = tk.StringVar()
-        year_cb = ttk.Combobox(frame, textvariable=self.year_var, values=[str(y) for y in range(2000, 2101)], state="readonly")
+        year_cb = ttk.Combobox(frame, textvariable=self.year_var, values=[str(y) for y in range(2024, 2101)], state="readonly")
         year_cb.grid(row=1, column=1, pady=5)
         year_cb.bind("<<ComboboxSelected>>", lambda e: self.update_polio_sundays())
 
-        # Polio Checkbox (Initially Disabled)
+        # Polio Checkbox
         self.include_polio = tk.BooleanVar()
         self.polio_check = tk.Checkbutton(
             frame,
@@ -85,6 +110,8 @@ class ICDSReportApp:
                   command=self.generate_format).pack(pady=10, ipadx=10, ipady=5)
         tk.Button(self.root, text="Back", bg="#dc3545", fg="white",
                   command=self.show_home).pack(pady=5, ipadx=10, ipady=5)
+
+        self.show_footer()
 
     def toggle_polio_day(self):
         """Show or hide Polio day dropdown."""
@@ -171,6 +198,8 @@ class ICDSReportApp:
         tk.Button(self.root, text="Back", bg="#dc3545", fg="white",
                   command=self.show_home).pack(pady=5, ipadx=10, ipady=5)
 
+        self.show_footer()
+
     def download_file(self):
         """Ask user for folder to save the generated file."""
         if not hasattr(self, "generated_file_path") or not self.generated_file_path:
@@ -189,7 +218,7 @@ class ICDSReportApp:
             messagebox.showerror("Error", str(e))
 
     # --------------------
-    # Generate Report Section (Updated)
+    # Generate Report Section
     # --------------------
     def show_generate_report(self):
         self.clear_window()
@@ -231,6 +260,8 @@ class ICDSReportApp:
             font=("Arial", 12, "bold"),
             command=self.show_home
         ).pack(pady=10, ipadx=10, ipady=5)
+
+        self.show_footer()
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
