@@ -48,11 +48,16 @@ def Format_Generator(month, year, polio_day):
         # Create DataFrame first
         df = pd.DataFrame(data)
         
+        
+        # Format the decimal places for Current Stock and New Stock columns
+        df[('', 'Current Stock')] = df[('', 'Current Stock')].apply(lambda x: f"{float(x):.3f}" if x and str(x).replace('.','',1).isdigit() else x)
+        df[('', 'New Stock')] = df[('', 'New Stock')].apply(lambda x: f"{float(x):.3f}" if x and str(x).replace('.','',1).isdigit() else x)
+        
         # Add Polio Campaign Day column if polio_day is not None
         if polio_day is not None:
             # Create a list where first element is the date and others are empty
             polio_col = [polio_day] + [''] * (len(food_items)-1)
-            df[('', 'Polio Campaign Day')] = polio_col
+            df[('', 'Polio Day')] = polio_col
         
         return df
 
@@ -70,8 +75,8 @@ def Format_Generator(month, year, polio_day):
     # Generate dynamic filename based on month and year
     month_name = pd.Timestamp(year, month, 1).strftime('%B')
     output_filename = f"{month_name}_{year}_Report_Format.xlsx"
-    # output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format\{output_filename}"
-    output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads\{output_filename}"
+    output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report_Format\{output_filename}"
+    # output_path = fr"C:\Users\MUHAMMAD NOUKHEZ\Downloads\{output_filename}"
 
 
     # Initialize a new workbook
@@ -200,30 +205,29 @@ def Format_Generator(month, year, polio_day):
 
 # Report_Generator_py function to generate the report based on the format
 def Report_Generator_py(file_path):
-    # Initialize global balance variables
-    global current_rice_balance, current_Daal_balance, current_Oil_balance, current_Salt_balance
 
-    # Check if the file exists
+    # ---------------------------
+    # 1️⃣ Validate Input File
+    # ---------------------------
     if not os.path.exists(file_path):  
         return (f"Error: The file {file_path} does not exist.")
     # Extract filename from path
     filename = os.path.basename(file_path)
 
-    # Use regex to extract month and year
-    match = re.search(r"([A-Za-z]+)_(\d{4})", filename)
+    match = re.search(r"([A-Za-z]+)_(\d{4})", filename) # Use regex to extract month and year
+
     if match:
         month_name, year = match.groups()
         output_filename = f"{month_name}_{year}_Report.xlsx"
-        # output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report", output_filename)
-        output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Downloads", output_filename)
-        # print("Generated Output Path:", output_path)
-    # else:
-    #     print("Error: Could not extract month and year from the filename.")
+        output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Dropbox\ICDS Report\Report", output_filename)
+        # output_path = os.path.join(r"C:\Users\MUHAMMAD NOUKHEZ\Downloads", output_filename)
+    #     print("Generated Output Path:", output_path)
+    else:
+        print("Error: Could not extract month and year from the filename.")
 
-    # Convert month name to number
-    month = datetime.strptime(month_name, "%B").month  # "March" -> 3
+
+    month = datetime.strptime(month_name, "%B").month  # Convert month name to number
     year = int(year)  # Ensure year is an integer
-
 
     # Generate date range
     date_range = pd.date_range(
@@ -231,37 +235,202 @@ def Report_Generator_py(file_path):
         end=f'{year}-{month:02d}-{pd.Timestamp(year, month, 1).days_in_month}'
     )
 
+
+    # === READ SHEETS ===
     icds_sheet = pd.read_excel(file_path, sheet_name='Report Format')
     stock_sheet = pd.read_excel(file_path, sheet_name='Stocks')
 
-    if 'Polio Campaign Day' in stock_sheet.columns:
-        polio_day = int(stock_sheet.loc[0, 'Polio Campaign Day'])
-    else:
-        polio_day = 0
+
+
+    # === CLEAN STOCK SHEET ===
+
+    if 'SL. No' in stock_sheet.columns:     
+        stock_sheet = stock_sheet.drop(columns=['SL. No'])  # Drop the 'SL. No' column if it exists
         
-    # Define the initial Rice balance and the reset date
-    initial_rice_balance = stock_sheet.loc[0, 'Current Stock']  # 803.790
-    rice_reset_date = int(stock_sheet.loc[0, 'Date'])               # 0
-    new_rice_balance = stock_sheet.loc[0, 'New Stock']         # 0
-    current_rice_balance = initial_rice_balance 
+    polio_day = int(stock_sheet.loc[0, 'Polio Day']) if 'Polio Day' in stock_sheet.columns else 0
 
-    # Define the initial Daal balance and the reset date
-    initial_Daal_balance = stock_sheet.loc[1, 'Current Stock']  # 73.500
-    daal_reset_date = int(stock_sheet.loc[1, 'Date'])               # 0
-    new_Daal_balance = stock_sheet.loc[1, 'New Stock']          # 0
-    current_Daal_balance = initial_Daal_balance
+    # Build the nested dictionary with "Current Blance" added
+    stock_data = {
+        'Food Items': {
+            row['Food Items']: {
+                'Current Stock': row['Current Stock'],
+                'New Stock': row['New Stock'],
+                'Date': row['Date'],
+            }
+            for _, row in stock_sheet.iterrows()
+        }
+    }
 
-    # Define the initial Oil balance and the reset date
-    initial_Oil_balance = stock_sheet.loc[2, 'Current Stock']  # 3.672
-    oil_reset_date = int(stock_sheet.loc[2, 'Date'])              # 0
-    new_Oil_balance = stock_sheet.loc[2, 'New Stock']          # 0
-    current_Oil_balance = initial_Oil_balance
 
-    # Define the initial Salt balance and the reset date
-    initial_Salt_balance = stock_sheet.loc[3, 'Current Stock']  # 3.672
-    salt_reset_date = int(stock_sheet.loc[3, 'Date'])            # 0
-    new_Salt_balance = stock_sheet.loc[3, 'New Stock']          # 0
-    current_Salt_balance = initial_Salt_balance
+    # === DEFINE RATIO SETTINGS ===
+    rice_days = ["Monday", "Wednesday", "Friday"]
+    khichdi_days = ["Tuesday", "Thursday", "Saturday", "Sunday"]
+    all_days = rice_days + khichdi_days  # Dynamically combines both lists
+
+    # Unified food ratios
+    food_ratios = {
+        "mothers": {
+            "rice": [(rice_days, 0.110), (khichdi_days, 0.075)],
+            "daal": [(khichdi_days, 0.030)],
+            "oil": [(all_days, 0.002)],
+            "salt": [(all_days, 0.002)]
+        },
+        "children": {
+            "rice": [(rice_days, 0.050), (khichdi_days, 0.075)],
+            "daal": [(khichdi_days, 0.030)],
+            "oil": [(all_days, 0.002)],
+            "salt": [(all_days, 0.002)]
+        }
+    }
+    
+    
+    
+    # Ensure 'Date' column is numeric
+    icds_sheet['Date'] = pd.to_numeric(icds_sheet['Date'], errors='coerce')
+
+    # Get Daal stock date
+    daal_date = stock_data['Food Items']['Daal']['Date']
+
+    # Only check if date is non-zero
+    if daal_date != 0:
+        match = icds_sheet.loc[icds_sheet['Date'] == daal_date, 'Days']
+
+        if not match.empty:
+            day_name = match.values[0]
+            if day_name in rice_days:
+                stock_data['Food Items']['Daal']['Date'] += 1
+        else:
+            print(f"⚠ No matching date {daal_date} found in icds_sheet")
+
+
+
+
+
+
+
+    # === HELPER FUNCTIONS ===
+    def convert_to_int(value):
+        if value == "-": return value
+        if pd.isna(value): return 0
+        try: return int(value)
+        except ValueError: return 0
+
+    def convert_to_float(value):
+        if value == "-": return value
+        if pd.isna(value): return np.nan
+        try: return float(value)
+        except ValueError: return np.nan
+
+    def replace_multiple_hyphens(value):
+        if isinstance(value, str):
+            return re.sub(r'-+', '-', value)
+        return value
+
+
+    def calculate_children_MorningSnacks(row):
+        if pd.notna(row["total_children"]) and row["Days"] in ["Tuesday", "Thursday", "Saturday"]:
+            return round(row["total_children"] * 0.8)  # Apply rounding
+        else:
+            return "-"
+        
+        
+    # Function to calculate Grand Total with special handling
+    def calculate_grand_total(row):
+        total_mothers = row["Total Mothers"]
+        total_children = row["Total Children"]
+        if total_mothers == "-" and total_children == "-": "-"
+        if pd.isna(total_mothers) and pd.isna(total_children): return np.nan
+        if total_mothers == "-": return total_children
+        if total_children == "-": return total_mothers
+
+        return total_mothers + total_children
+
+
+    def assign_food_days(row, total_column, Days, rice_days, Khichdi_days):
+        if row[total_column] == "-": return "-", "-"
+        if pd.isna(row[total_column]): return np.nan, np.nan
+        if row[Days] in rice_days: return row[total_column], "-"
+        elif row[Days] in Khichdi_days: return "-", row[total_column]
+        else: return "-", "-"
+
+
+    def get_ratio_for_day(day, item_ratios):
+        for days_list, ratio in item_ratios:
+            if day in days_list:
+                return ratio
+        return None
+
+
+    def calculate_food_amount(row, total_column, item_ratios):
+        if pd.isna(row[total_column]):  
+            return np.nan
+        if row[total_column] == "-":  
+            return "-"
+        ratio = get_ratio_for_day(row["Days"], item_ratios)
+        return row[total_column] * ratio if ratio is not None else None
+
+
+
+
+    def calculate_total_expenditure(icds_sheet, food_item):
+    
+        col_mothers = f"{food_item} for Mothers"
+        col_children = f"{food_item} for Children"
+        total_col = f"Total {food_item} Exp."
+
+        # Check if both required columns exist
+        if col_mothers in icds_sheet.columns and col_children in icds_sheet.columns:
+            icds_sheet[total_col] = icds_sheet[col_mothers] + icds_sheet[col_children]
+        else:
+            print(f"Warning: Missing column(s) for '{food_item}': "
+                f"{'[Mothers]' if col_mothers not in icds_sheet.columns else ''} "
+                f"{'[Children]' if col_children not in icds_sheet.columns else ''}")
+            
+        return total_col
+
+
+
+    def calculate_balance_column(icds_sheet, food_item, stock_data):
+    
+        total_exp_col = f"Total {food_item} Exp."
+        balance_col = f"{food_item} Balance"
+
+        # Fetch stock info
+        stock_info = stock_data['Food Items'][food_item]
+        initial_balance = stock_info['Current Stock']
+        new_stock = stock_info['New Stock']
+        reset_date = stock_info['Date']
+
+        balance_list = []
+        current_balance = initial_balance
+
+        for _, row in icds_sheet.iterrows():
+            total_exp = pd.to_numeric(row.get(total_exp_col, 0), errors='coerce')
+
+            if pd.isna(total_exp):
+                balance_list.append("-")
+                continue
+
+            if row['Date'] == reset_date:
+                current_balance += new_stock
+
+            if current_balance <= 0:
+                balance_list.append("-")
+            else:
+                current_balance -= total_exp
+                if current_balance < 0:
+                    balance_list.append("-")
+                    current_balance = 0
+                else:
+                    balance_list.append(f"{current_balance:.3f}")  # format as string with 3 decimals
+
+
+        icds_sheet[balance_col] = balance_list
+        return icds_sheet
+
+
+
+
 
     # Regular expression to extract month and year
     match = re.search(r'\\([A-Za-z]+)_(\d{4})_', file_path)
@@ -270,19 +439,11 @@ def Report_Generator_py(file_path):
         month = match.group(1)  # Extracts the month (e.g., 'January')
         year = match.group(2)   # Extracts the year (e.g., '2024')
 
-    # Define the conversion function
-    def convert_to_int(value):
-        if value == "-":
-            return value  # Keep '-' as it is
-        if pd.isna(value):
-            return 0  # Replace NaN with 0
-        try:
-            return int(value)  # Convert valid numbers to integers
-        except ValueError:
-            return 0  # Replace invalid entries with 0
+        
 
-    # Apply the function to relevant columns
-    columns_to_convert = [
+    # === PREPARE ICDS SHEET ===
+    columns_to_convert = [      # Apply the function to relevant columns
+
         'Pregnant (Mothers)', 
         'Lactating (Mothers)', 
         'Boys (6m - 3y)', 
@@ -294,87 +455,42 @@ def Report_Generator_py(file_path):
     for col in columns_to_convert:
         icds_sheet[col] = icds_sheet[col].apply(convert_to_int)
         
-    rice_days = ["Monday", "Wednesday", "Friday"]
-    Khichdi_days = ["Tuesday", "Thursday", "Saturday","Sunday"]
-
-    rice_ratios_mothers = {"Monday": 0.110, "Wednesday": 0.110, "Friday": 0.110, "Tuesday": 0.075, "Thursday": 0.075, "Saturday": 0.075, "Sunday": 0.075}
-    daal_ratios_mothers = {"Tuesday": 0.030, "Thursday": 0.030, "Saturday": 0.030, "Sunday": 0.030}
-
-    # Define food ratios for children
-    rice_ratios_children = {"Monday": 0.050, "Wednesday": 0.050, "Friday": 0.050, "Tuesday": 0.075, "Thursday": 0.075, "Saturday": 0.075, "Sunday": 0.075}
-    daal_ratios_children = {"Tuesday": 0.030, "Thursday": 0.030, "Saturday": 0.030, "Sunday": 0.030}
-
-    # Define default ratio for oil and salt
-    oil_salt_default_ratio = 0.002
-
-    # Function to replace multiple hyphens with a single one
-    def replace_multiple_hyphens(value):
-        if isinstance(value, str):  # Only process string values
-            return re.sub(r'-+', '-', value)
-        return value  # Return non-string values as they are
-
-    # Convert columns to float, while handling '-' and NaN
-    def convert_to_float(value):
-        if value == "-":
-            return value  
-        if pd.isna(value):
-            return np.nan  
-        try:
-            return float(value)  
-        except ValueError:
-            return np.nan  
-
-    def assign_food_days(row, total_column, Days, rice_days, Khichdi_days):
-        if row[total_column] == "-":
-            return "-", "-"
-        if pd.isna(row[total_column]):
-            return np.nan, np.nan
-        if row[Days] in rice_days:
-            return row[total_column], "-"
-        elif row[Days] in Khichdi_days:
-            return "-", row[total_column]
-        else:
-            return "-", "-"
-
-    # Define the function for Morning Snacks
-    def calculate_children_MorningSnacks(row):
-        if pd.notna(row["total_children"]) and row["Days"] in ["Tuesday", "Thursday", "Saturday"]:
-            return round(row["total_children"] * 0.8)  # Apply rounding
-        else:
-            return "-"
-
-    def calculate_food(row, total_column, day_column, food_ratios, default_ratio=None):
-        if pd.isna(row[total_column]):  
-            return np.nan
-        if row[total_column] == "-":  
-            return "-"
-        ratio = food_ratios.get(row[day_column], default_ratio)
-        return row[total_column] * ratio if ratio is not None else None
-
+        
     icds_sheet["Total Mothers"] = icds_sheet["Pregnant (Mothers)"] + icds_sheet["Lactating (Mothers)"]
+    icds_sheet["Total Children"] = (icds_sheet["Boys (6m - 3y)"] + icds_sheet["Girls (6m - 3y)"] + icds_sheet["Boys (3y - 6y)"] + icds_sheet["Girls (3y - 6y)"])
+
+
+
+
+    icds_sheet[["Mothers Rice Day", "Mothers Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand",args=("Total Mothers", "Days", rice_days, khichdi_days))
+    icds_sheet[["Children Rice Day", "Children Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand", args=("Total Children", "Days", rice_days, khichdi_days))
+
+
 
     icds_sheet.insert(4, "Total Mothers", icds_sheet.pop("Total Mothers"))
-    icds_sheet = icds_sheet.applymap(replace_multiple_hyphens)
-
-    icds_sheet[["Mothers Rice Day", "Mothers Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand",args=("Total Mothers", "Days", rice_days, Khichdi_days))
+    icds_sheet = icds_sheet.apply(lambda col: col.map(replace_multiple_hyphens))
     icds_sheet.insert(4, "Mothers Rice Day", icds_sheet.pop("Mothers Rice Day"))
     icds_sheet.insert(5, "Mothers Khichdi Day", icds_sheet.pop("Mothers Khichdi Day"))
 
     icds_sheet["Total Mothers"] = icds_sheet["Total Mothers"].apply(convert_to_float)
+    icds_sheet["Total Children"] = icds_sheet["Total Children"].apply(convert_to_float)
 
-    # Apply calculations for mothers
-    icds_sheet["Rice for Mothers"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Mothers", "Days", rice_ratios_mothers))
-    icds_sheet["Daal for Mothers"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Mothers", "Days", daal_ratios_mothers))
-    icds_sheet["Oil for Mothers"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Mothers", "Days", {}, oil_salt_default_ratio))
-    icds_sheet["Salt for Mothers"] = icds_sheet["Oil for Mothers"]  # Same as oil
 
-    columns_order = icds_sheet.columns.tolist()
-    new_columns_order = (columns_order[:7] + ["Rice for Mothers", "Daal for Mothers", "Oil for Mothers", "Salt for Mothers"] + columns_order[7:-4])
-    icds_sheet = icds_sheet[new_columns_order]
-    icds_sheet = icds_sheet.applymap(replace_multiple_hyphens)
 
-    # Calculate "Total Children" as the sum of the specified columns
-    icds_sheet["Total Children"] = (icds_sheet["Boys (6m - 3y)"] + icds_sheet["Girls (6m - 3y)"] + icds_sheet["Boys (3y - 6y)"] + icds_sheet["Girls (3y - 6y)"])
+
+
+    # === APPLY CALCULATIONS FOR BOTH GROUPS ===
+    for group in ["mothers", "children"]:
+        total_col = f"Total {group.capitalize()}"
+        for item, ratios in food_ratios[group].items():
+            col_name = f"{item.capitalize()} for {group.capitalize()}"
+            icds_sheet[col_name] = icds_sheet.apply(
+                calculate_food_amount,
+                axis=1,
+                args=(total_col, ratios)
+            )
+
+
 
     icds_sheet["total_children"] = pd.to_numeric(icds_sheet["Total Children"], errors='coerce')
     icds_sheet["Morning Snacks"] = icds_sheet.apply(calculate_children_MorningSnacks, axis=1)
@@ -382,133 +498,46 @@ def Report_Generator_py(file_path):
     columns = list(icds_sheet.columns)
     columns.insert(columns.index("Days") + 1, columns.pop(columns.index("Morning Snacks")))
     icds_sheet = icds_sheet[columns]
-    icds_sheet = icds_sheet.applymap(replace_multiple_hyphens)
+    icds_sheet = icds_sheet.apply(lambda col: col.map(replace_multiple_hyphens))
 
-    icds_sheet[["Children Rice Day", "Children Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand", args=("Total Children", "Days", rice_days, Khichdi_days))
-    icds_sheet["Total Children"] = icds_sheet["Total Children"].apply(convert_to_float)
+    
 
-    # Apply calculations for children
-    icds_sheet["Rice for Children"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Children", "Days", rice_ratios_children))
-    icds_sheet["Daal for Children"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Children", "Days", daal_ratios_children))
-    icds_sheet["Oil for Children"] = icds_sheet.apply(calculate_food, axis=1, args=("Total Children", "Days", {}, oil_salt_default_ratio))
-    icds_sheet["Salt for Children"] = icds_sheet["Oil for Children"]  # Same as oil
-
-    # Function to calculate rice balance row by row with reset on the specified reset date
-    def calculate_rice_balance(row):
-        global current_rice_balance
-        # Ensure "Total Rice Exp." is a numeric value (or treat NaN correctly)
-        total_exp = pd.to_numeric(row["Total Rice Exp."], errors="coerce")
-        
-        if pd.isna(total_exp):  # Check if "Total Rice Exp." is NaN
-            return "-" # Return NaN if the row's "Total Rice Exp." is NaN
-        elif row["Date"] == rice_reset_date:
-            current_rice_balance = new_rice_balance  # Reset the balance on the specified reset date
-            current_rice_balance -= total_exp
-            return current_rice_balance
-        elif current_rice_balance <= 0:
-            return "-"  # Display "-" if balance is zero or less than the required expenditure
-        else:
-            current_rice_balance -= total_exp  # Subtract the expenditure from the balance
-            if current_rice_balance < 0:
-                return "-"
-            else:
-                return current_rice_balance   
-
-    # Function to calculate Daal balance row by row with reset on the specified reset date
-    def calculate_Daal_balance(row):
-        global current_Daal_balance
-        # Ensure "Total Rice Exp." is a numeric value (or treat NaN correctly)
-        total_exp = pd.to_numeric(row["Total Daal Exp."], errors="coerce")
-        
-        if pd.isna(total_exp):  # Check if "Total Rice Exp." is NaN
-            return "-"   # Return NaN if the row's "Total Rice Exp." is NaN
-        elif row["Date"] == daal_reset_date:
-            current_Daal_balance = new_Daal_balance  # Reset the balance on the specified reset date
-            current_Daal_balance -= total_exp
-            return current_Daal_balance
-        elif current_Daal_balance <= 0:
-            return "-"  # Display "-" if balance is zero or less than the required expenditure
-        else:
-            current_Daal_balance -= total_exp  # Subtract the expenditure from the balance
-            if current_Daal_balance < 0:
-                return "-"
-            else:
-                return current_Daal_balance
-            
-    # Function to calculate Oil balance row by row with reset on the specified reset date
-    def calculate_Oil_balance(row):
-        global current_Oil_balance
-        # Ensure "Total Rice Exp." is a numeric value (or treat NaN correctly)
-        total_exp = pd.to_numeric(row["Total Oil Exp."], errors="coerce")
-        
-        if pd.isna(total_exp):  # Check if "Total Rice Exp." is NaN
-            return "-"  # Return NaN if the row's "Total Rice Exp." is NaN
-        elif row["Date"] == oil_reset_date:
-            current_Oil_balance = new_Oil_balance  # Reset the balance on the specified reset date
-            current_Oil_balance -= total_exp
-            return current_Oil_balance
-        elif current_Oil_balance <= 0:
-            return "-"  # Display "-" if balance is zero or less than the required expenditure
-        else:
-            current_Oil_balance -= total_exp  # Subtract the expenditure from the balance
-            if current_Oil_balance < 0:
-                return "-"
-            else:
-                return current_Oil_balance
-            
-    # Function to calculate Salt balance row by row with reset on the specified reset date
-    def calculate_Salt_balance(row):
-        global current_Salt_balance
-        # Ensure "Total Rice Exp." is a numeric value (or treat NaN correctly)
-        total_exp = pd.to_numeric(row["Total Salt Exp."], errors="coerce")
-        
-        if pd.isna(total_exp):  # Check if "Total Rice Exp." is NaN
-            return "-"  # Return NaN if the row's "Total Rice Exp." is NaN
-        elif row["Date"] == salt_reset_date:
-            current_Salt_balance = new_Salt_balance  # Reset the balance on the specified reset date
-            current_Salt_balance -= total_exp
-            return current_Salt_balance
-        elif current_Salt_balance <= 0:
-            return "-"  # Display "-" if balance is zero or less than the required expenditure
-        else:
-            current_Salt_balance -= total_exp  # Subtract the expenditure from the balance
-            if current_Salt_balance < 0:
-                return "-"
-            else:
-                return current_Salt_balance
-
-    # Function to calculate Grand Total with special handling
-    def calculate_grand_total(row):
-        total_mothers = row["Total Mothers"]
-        total_children = row["Total Children"]
-        if total_mothers == "-" and total_children == "-":
-            return "-"
-        # Handle case where both are NaN
-        if pd.isna(total_mothers) and pd.isna(total_children):
-            return np.nan
-        # Handle case where one of them is "-" and the other is numeric
-        if total_mothers == "-":
-            return total_children
-        if total_children == "-":
-            return total_mothers
-
-        return total_mothers + total_children
 
     icds_sheet["Grand Total"] = icds_sheet.apply(calculate_grand_total, axis=1)
-    icds_sheet[["Grand Total Rice Day", "Grand Total Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand", args=("Grand Total", "Days", rice_days, Khichdi_days))
+    icds_sheet[["Grand Total Rice Day", "Grand Total Khichdi Day"]] = icds_sheet.apply(assign_food_days, axis=1, result_type="expand", args=("Grand Total", "Days", rice_days, khichdi_days))
 
     icds_sheet["Grand Total Rice Day"] = icds_sheet["Grand Total Rice Day"].apply(convert_to_int)
     icds_sheet["Grand Total Khichdi Day"] = icds_sheet["Grand Total Khichdi Day"].apply(convert_to_int)
 
-    icds_sheet["Total Rice Exp."] = icds_sheet["Rice for Mothers"] + icds_sheet["Rice for Children"]
-    icds_sheet["Rice Balance"] = icds_sheet.apply(calculate_rice_balance, axis=1)
-    icds_sheet["Total Daal Exp."] = icds_sheet["Daal for Mothers"] + icds_sheet["Daal for Children"]
-    icds_sheet["Daal Balance"] = icds_sheet.apply(calculate_Daal_balance, axis=1)
-    icds_sheet["Total Oil Exp."] = icds_sheet["Oil for Mothers"] + icds_sheet["Oil for Children"]
-    icds_sheet["Oil Balance"] = icds_sheet.apply(calculate_Oil_balance, axis=1)
-    icds_sheet["Total Salt Exp."] = icds_sheet["Salt for Mothers"] + icds_sheet["Salt for Children"]
-    icds_sheet["Salt Balance"] = icds_sheet.apply(calculate_Salt_balance, axis=1)
-    icds_sheet = icds_sheet.applymap(replace_multiple_hyphens)
+
+    # Original columns list
+    columns_order = icds_sheet.columns.tolist()
+
+    # Indices of mothers food columns in the original
+    mothers_food_cols = ["Rice for Mothers", "Daal for Mothers", "Oil for Mothers", "Salt for Mothers"]
+
+    # Build new order without duplication
+    new_columns_order = (
+        columns_order[:7]  # First 7 columns
+        + mothers_food_cols
+        + [col for col in columns_order[7:] if col not in mothers_food_cols]  # Skip duplicates
+    )
+
+    # Reorder DataFrame
+    icds_sheet = icds_sheet[new_columns_order]
+    icds_sheet = icds_sheet.apply(lambda col: col.map(replace_multiple_hyphens))
+
+
+
+    # Loop through each food item from stock_data and calculate total expenditure
+    for food_item in stock_data['Food Items']:
+        calculate_total_expenditure(icds_sheet, food_item)
+        icds_sheet = calculate_balance_column(icds_sheet, food_item, stock_data)
+
+
+    icds_sheet = icds_sheet.apply(lambda col: col.map(replace_multiple_hyphens))
+
+
 
     temp_sheet = icds_sheet.copy()
     for col in temp_sheet.columns.difference(["Date", "Days"]):
@@ -545,17 +574,31 @@ def Report_Generator_py(file_path):
 
     icds_sheet = pd.concat([icds_sheet, totals_row], ignore_index=True)
 
+
     daal_data_update = ["Total Daal Exp.", "Daal for Children", "Daal for Mothers"]
-    icds_sheet.loc[icds_sheet["Daal Balance"] == "-", daal_data_update] = "-"
     Oil_data_update = ["Total Oil Exp.", "Oil for Children", "Oil for Mothers"]
-    icds_sheet.loc[icds_sheet["Oil Balance"] == "-", Oil_data_update] = "-"
     salt_data_update = ["Total Salt Exp.", "Salt for Children", "Salt for Mothers"]
+
+
+    # Fix dtype before assigning '-'
+    for col_group in [daal_data_update, Oil_data_update, salt_data_update]:
+        for col in col_group:
+            if col in icds_sheet.columns:
+                icds_sheet[col] = icds_sheet[col].astype(object)
+
+    icds_sheet.loc[icds_sheet["Daal Balance"] == "-", daal_data_update] = "-"
+    icds_sheet.loc[icds_sheet["Oil Balance"] == "-", Oil_data_update] = "-"
     icds_sheet.loc[icds_sheet["Salt Balance"] == "-", salt_data_update] = "-"
+
+    # Format floats without applymap deprecation warning
+    icds_sheet = icds_sheet.apply(
+        lambda col: col.map(lambda x: f"{x:.3f}" if isinstance(x, float) else x)
+    )
 
     # Drop the specified columns
     columns_to_drop = ["Total Mothers", "Total Children", "Grand Total"]
     icds_sheet = icds_sheet.drop(columns=columns_to_drop, errors='ignore')
-    icds_sheet = icds_sheet.applymap(lambda x: f"{x:.3f}" if isinstance(x, float) else x)
+    # icds_sheet = icds_sheet.applymap(lambda x: f"{x:.3f}" if isinstance(x, float) else x)
 
     columns_to_convert = [
         "Lactating (Mothers)", "Mothers Rice Day", "Mothers Khichdi Day",
@@ -565,6 +608,8 @@ def Report_Generator_py(file_path):
     for col in columns_to_convert:
         icds_sheet[col] = icds_sheet[col].apply(convert_to_int)
         
+        
+
     rename_mapping = {
         "Mothers Rice Day": "Rice Day (Mothers)",
         "Mothers Khichdi Day": "Khichdi Day (Mothers)",
@@ -589,10 +634,6 @@ def Report_Generator_py(file_path):
     # Rename columns
     icds_sheet.rename(columns=rename_mapping, inplace=True)
 
-    from openpyxl import Workbook
-    from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
-    from openpyxl.utils import get_column_letter
-    from openpyxl.utils.dataframe import dataframe_to_rows
 
     # Initialize a new workbook and add a worksheet
     wb = Workbook()
@@ -603,7 +644,9 @@ def Report_Generator_py(file_path):
     for row in dataframe_to_rows(icds_sheet, index=False, header=True):
         ws.append(row)
 
+
     balance_columns = ["Rice Balance", "Daal Balance", "Oil Balance", "Salt Balance"]
+
 
     # Define styles
     header_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")  # Light blue
@@ -696,11 +739,19 @@ def Report_Generator_py(file_path):
         for col_idx in balance_col_indices:
             row[col_idx - 1].fill = total_balance_fill
 
+
     # Set column widths
     ws.column_dimensions[get_column_letter(1)].width = 4.5
     ws.column_dimensions[get_column_letter(2)].width = 10.5
     for col_idx in range(3, ws.max_column + 1):
         ws.column_dimensions[get_column_letter(col_idx)].width = 6.5
+        
+    # Columns where you want to set width
+    columns_to_resize = [18, 24, 25, 27, 29, 31]
+
+    # Apply the same width to each
+    for col_num in columns_to_resize:
+        ws.column_dimensions[get_column_letter(col_num)].width = 7.5
 
     # Protect worksheet
     ws.protection.sheet = True
@@ -708,15 +759,5 @@ def Report_Generator_py(file_path):
 
     # Save workbook
     wb.save(output_path)
-    # print("Workbook saved successfully!")
-    # print(f"Output path: {output_path}")
-    
-    
-    # os.system('cls' if os.name == 'nt' else 'clear')
-    
-    # return output_path  # Return the output path for further use if needed
-
-
-
-
-
+    print("Workbook saved successfully!")
+    print(f"Output path: {output_path}")
