@@ -1,28 +1,34 @@
 @echo off
 echo Setting up the project...
+
+:: Create virtual environment
 python -m venv .venv
 echo .venv created
 
-
+:: Activate virtual environment
 call .venv\Scripts\activate.bat
 echo .venv activated.
 
+:: Upgrade pip
 echo Upgrading pip...
 python.exe -m pip install --upgrade pip
 echo pip upgrade -- done
 
+:: Install ipykernel
 echo Installing ipykernel...
 pip install ipykernel
 
-
-echo Installing dependencies...
-pip install -r requirements.txt
-echo requirements installed
-
+:: Install dependencies from requirements.txt if it exists
+if exist requirements.txt (
+    echo Installing dependencies from requirements.txt...
+    pip install -r requirements.txt
+    echo requirements installed
+) else (
+    echo No requirements.txt found. Skipping dependency installation.
+)
 
 :: Create and configure .gitignore
 echo Creating .gitignore file...
-
 (
     echo .venv/
     echo .venv/**/__init__.py
@@ -36,7 +42,6 @@ echo Creating .gitignore file...
     echo .vscode/
     echo .DS_Store
 ) > .gitignore
-
 echo .gitignore file created.
 
 echo.
