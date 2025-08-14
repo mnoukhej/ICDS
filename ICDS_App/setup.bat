@@ -41,6 +41,7 @@ echo Creating .gitignore file...
     echo .idea/
     echo .vscode/
     echo .DS_Store
+    echo build/
 ) > .gitignore
 echo .gitignore file created.
 
