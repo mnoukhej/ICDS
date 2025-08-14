@@ -218,7 +218,7 @@ class ICDSReportApp:
             messagebox.showerror("Error", str(e))
 
     # --------------------
-    # Generate Report Section
+    # Generate Report Section 
     # --------------------
     def show_generate_report(self):
         self.clear_window()
