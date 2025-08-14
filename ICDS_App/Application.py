@@ -6,7 +6,20 @@ import calendar
 import re
 import shutil
 import os
+import sys
 from Main_Func import Format_Generator, Report_Generator_py
+
+# -----------------------------
+# Helper to get correct path (PyInstaller friendly)
+# -----------------------------
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller exe """
+    try:
+        base_path = sys._MEIPASS  # PyInstaller temp folder
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 
 # -------------------------------
@@ -40,6 +53,22 @@ class ICDSReportApp:
 
         self.root.configure(bg=self.BG_ROOT)
         self.root.resizable(False, False)
+
+
+        # Window icon
+        try:
+            self.root.iconbitmap(resource_path("app_icon.ico"))
+        except Exception as e:
+            print(f"Icon load failed: {e}")
+
+        # Display logo
+        try:
+            logo_img = Image.open(resource_path("logo.png"))
+            logo_img = logo_img.resize((120, 120), Image.LANCZOS)
+            self.logo_tk = ImageTk.PhotoImage(logo_img)
+            tk.Label(root, image=self.logo_tk, bg="white").pack(pady=10)
+        except Exception as e:
+            print(f"Logo load failed: {e}")
 
         # Set app icon (ignore if not found)
         self._set_icon_safely("logo.png")
