@@ -20,13 +20,6 @@
 ├── Format_Generator.ipynb
 ├── Generate_Format.py
 ├── Generate_Report.py
-├── ICDS Report
-│   ├── Report
-│   │   ├── repo_gen.py
-│   │   └── reportGenrator_For_ICDS.ipynb
-│   └── Report_Format
-│       ├── formarGen.py
-│       └── formarGenerator.ipynb
 ├── ICDS_App
 │   ├── Application.exe
 │   ├── Application.py
