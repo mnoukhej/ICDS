@@ -93,6 +93,5 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 - Update holiday_list.py to add or modify holidays
 - Edit paths in Main_Func.py to change default save location
 
-<hr>
 ## 📜 License
 This project is licensed under the terms of the [MIT License](ICDS_App/Txt_Files/LICENSE.txt).
