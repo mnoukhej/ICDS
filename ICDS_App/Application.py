@@ -134,19 +134,30 @@ class ICDSAutoDeskApp:
         # Combobox style that adapts to theme
         style.configure(
             "Themed.TCombobox",
-            fieldbackground=t["CARD_BG"],
-            background=t["CARD_BG"],
-            foreground=t["FG_TEXT"],
-            arrowcolor=t["FG_TEXT"],
-            bordercolor=t["CARD_BG"],
+            fieldbackground=t["CARD_BG"],   # Entry background
+            background=t["CARD_BG"],        # Dropdown button background
+            foreground=t["FG_TEXT"],        # Normal text color
+            arrowcolor=t["FG_TEXT"],        # Arrow color
+            bordercolor="#888888",          # Slight border so it looks distinct
             lightcolor=t["CARD_BG"],
             darkcolor=t["CARD_BG"],
         )
+
+        # Add difference when focused / selecting
         style.map(
             "Themed.TCombobox",
-            fieldbackground=[("readonly", t["CARD_BG"])],
-            foreground=[("readonly", t["FG_TEXT"])],
+            fieldbackground=[
+                ("readonly", t["CARD_BG"]),
+                ("focus", self._adjust_hex(t["CARD_BG"], 0.9))  # darker on focus
+            ],
+            foreground=[
+                ("readonly", t["FG_TEXT"]),
+                ("focus", "#ffffff")  # white text when active
+            ],
+            selectbackground=[("!disabled", "#0078d7")],  # highlight blue
+            selectforeground=[("!disabled", "#ffffff")]   # white text on highlight
         )
+
 
     def _adjust_hex(self, hex_color: str, factor: float):
         """Lighten/Darken a hex color by multiplier factor."""
