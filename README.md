@@ -10,15 +10,30 @@ ICDS AutoDesk is an automated desktop tool for generating ICDS reports with ease
 ## Folder Structure
 
 <!-- TREE_START -->
-<<<<<<< HEAD
-
-=======
 ```
 ├── App.py
 ├── Application.py
 ├── Format_Generator.ipynb
 ├── Generate_Format.py
 ├── Generate_Report.py
+├── ICDS Report
+│   ├── Report
+│   │   ├── April_2025_Report.xlsx
+│   │   ├── February_2025_Report.xlsx
+│   │   ├── January_2025_Report.xlsx
+│   │   ├── July_2025_Report.xlsx
+│   │   ├── June_2025_Report.xlsx
+│   │   ├── March_2025_Report.xlsx
+│   │   └── May_2025_Report.xlsx
+│   └── Report_Format
+│       ├── April_2025_Report_Format.xlsx
+│       ├── August_2025_Report_Format.xlsx
+│       ├── February_2025_Report_Format.xlsx
+│       ├── January_2025_Report_Format.xlsx
+│       ├── July_2025_Report_Format.xlsx
+│       ├── June_2025_Report_Format.xlsx
+│       ├── March_2025_Report_Format.xlsx
+│       └── May_2025_Report_Format.xlsx
 ├── ICDS_App
 │   ├── Application.exe
 │   ├── Application.py
@@ -36,17 +51,14 @@ ICDS AutoDesk is an automated desktop tool for generating ICDS reports with ease
 │   ├── requirements.txt
 │   └── setup.bat
 ├── Main_Func.py
-├── README - Copy.md
 ├── README.md
 ├── Report_Generator.ipynb
 ├── holiday_list.py
 ├── logo.png
 ├── requirements.txt
 ├── setup.bat
-├── test_tree.py
 └── update_tree.py
 ```
->>>>>>> d1ab7b99cdc35d34eb2cf60b1d21d5bfd72ff915
 <!-- TREE_END -->
 
 
