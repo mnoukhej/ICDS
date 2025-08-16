@@ -36,8 +36,6 @@ ICDS AutoDesk is an automated desktop tool for generating ICDS reports with ease
 ├── README - Copy.md
 ├── README.md
 ├── Report_Generator.ipynb
-├── SetupFile
-│   └── ICDSAutoDesk Setup.exe
 ├── holiday_list.py
 ├── logo.png
 ├── requirements.txt
