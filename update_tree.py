@@ -1,10 +1,6 @@
 
----
-
-## 2. Create `update_tree.py`  
-Save this in your repo root:
-
-```python
+# update_tree.py
+# This script generates a directory tree structure and updates the README file with it.
 import os
 
 def generate_tree(path=".", prefix=""):
