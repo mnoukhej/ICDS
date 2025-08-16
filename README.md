@@ -93,24 +93,6 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 - Update holiday_list.py to add or modify holidays
 - Edit paths in Main_Func.py to change default save location
 
-
-
 <hr>
-
-### 📸 Screenshots
-![App Screenshot](logo.png)
-
-
 ## 📜 License
 This project is licensed under the terms of the [MIT License](ICDS_App/Txt_Files/LICENSE.txt).
-
-
-
-
-
-✅ This way:
-- Windows commands show correctly (`powershell`, `bat`)  
-- Linux/macOS commands show correctly (`bash`)  
-- Users won’t be confused about which script to run.  
-
-Do you also want me to **add virtual environment activation steps** (like `.\.venv\Scripts\activate` for Windows and `source .venv/bin/activate` for Linux/macOS)?
