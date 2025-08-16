@@ -1,11 +1,20 @@
 # ICDS AutoDesk
 
 ## Project Overview
-ICDS AutoDesk is an automated desktop tool for generating ICDS reports with ease.
+    ICDS AutoDesk is an automated desktop tool designed to simplify the generation of ICDS (Integrated Child Development Services) reports.
+    It provides ready-to-use Excel formats, processes completed data, and generates final reports with accurate stock and balance calculations.
 
-1. Create standardized report formats for any given month/year
-2. Generate comprehensive reports based on the created formats
-3. Manage food stock data and calculate balances
+# ✨ Key Features
+
+    📑 Format Generator – Create standardized monthly report templates
+
+    📊 Report Generator – Generate final reports from completed formats
+
+    🍲 Food Stock Management – Track stock, consumption, and balances
+
+    📅 Holiday & Sunday Handling – Auto-format special days including optional Polio campaigns
+
+    ⚡ Automation & Error Handling – Progress tracking with validation and recovery
 
 ## Folder Structure
 
@@ -51,60 +60,86 @@ ICDS AutoDesk is an automated desktop tool for generating ICDS reports with ease
 <!-- TREE_END -->
 
 
-### Format Generator (`Generate_Format.py`)
-    - Creates Excel templates for monthly ICDS reports
-    - Handles holidays and Sundays with special formatting
-    - Includes optional Polio campaign day tracking
-    - Generates separate sheets for daily reports and stock management
+## ⚙️ Modules
+# 📝 Format Generator (Generate_Format.py)
 
-    ### Report Generator (`Generate_Report.py`)
-    - Processes completed report formats to generate final reports
-    - Calculates food consumption and remaining balances
-    - Handles different meal types (Rice Day/Khichdi Day)
-    - Provides progress tracking during report generation
-    - Includes comprehensive error handling
+    Generates monthly ICDS report Excel templates
 
-    ### Main Functions (`Main_Func.py`)
-    - Core logic for both format and report generation
-    - Handles date calculations, food ratio computations
-    - Manages stock balance tracking with reset functionality
-    - Applies consistent styling and formatting to Excel outputs
+    Applies formatting for Sundays, holidays, and Polio campaign days
 
-    ## Installation
+    Creates sheets for daily reporting and stock management
 
-    1. Clone the repository
-    2. Install requirements: `pip install -r requirements.txt`
-    3. Run `setup.bat` to configure the environment (Windows only)
+# 📊 Report Generator (Generate_Report.py)
 
-    ## Usage
+    Processes completed format files to generate final reports
 
-    ### Generating a Report Format
-    Run `Generate_Format.py` and provide:
-    - Month (1-12)
-    - Year (2000-2100)
-    - Optional Polio campaign day
+    Calculates food consumption & stock balances
 
-    ### Generating a Report
-    Run `Generate_Report.py` which will process the most recently created format file.
+    Supports multiple meal types (Rice/Khichdi days)
 
-    ## File Structure
-    
-    ## Dependencies
+    Tracks progress with error handling
 
-    - Python 3.7+
-    - pandas
-    - openpyxl
-    - numpy
+# 🛠️ Core Functions (Main_Func.py)
 
-    ## Configuration
+    Handles all date & ratio calculations
 
-    - Modify `holiday_list.py` to add/update holidays
-    - Edit paths in `Main_Func.py` to change default save locations
+    Manages stock balances with reset option
 
-    ## Notes
+    Provides consistent Excel formatting & styling
 
-    - Output files are saved to the Downloads folder by default
-    - The system handles food stock balances with automatic resets
-    - Special formatting is applied for Sundays, holidays, and Polio days
 
-    For questions or issues, please contact the maintainer.
+
+## 🚀 Installation
+
+1. Clone the repository:
+
+    git clone <repo-url>
+    cd ICDS_AutoDesk
+
+
+2. Install dependencies:
+
+    pip install -r requirements.txt
+
+
+3. Run the setup script (Windows only):
+
+    setup.bat
+
+
+## 📦 Dependencies
+
+    Python 3.7+
+
+    pandas
+
+    openpyxl
+
+    numpy
+
+## 🔧 Configuration
+
+    Update holiday_list.py to add or modify holidays
+
+    Edit paths in Main_Func.py to change default save location
+
+
+
+<hr>
+
+## 📸 Screenshots
+    ![App Screenshot](logo.png)
+
+
+## ▶️ Usage
+    Run the application:
+    python Application.py
+
+## 📜 License
+This project is licensed under the terms of the [MIT License](ICDS_App/Txt_Files/LICENSE.txt).
+
+
+### 📝 Format Generator
+- Generates monthly ICDS report Excel templates  
+- Applies formatting for Sundays, holidays, and Polio campaign days  
+- Creates sheets for daily reporting and stock management  
