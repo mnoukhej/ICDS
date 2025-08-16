@@ -351,9 +351,9 @@ class ICDSAutoDeskApp:
 
         card = self._card(content_height=220)
 
-        self._button(card, "Create a New Report Format", t["BTN_GREEN"],
+        self._button(card, "Open Template Designer", t["BTN_GREEN"],
                      self._show_generate_format).pack()
-        self._button(card, "View or Generate Reports", t["BTN_RED"],
+        self._button(card, "Open Report Generator", t["BTN_RED"],
                      self._show_generate_report).pack()
 
         self._footer()
@@ -414,7 +414,7 @@ class ICDSAutoDeskApp:
 
         # Buttons
         self._button(card, "Generate Format", t["BTN_GREEN"], self._generate_format).pack(pady=(6, 2))
-        self._button(card, "Back", t["BTN_ORANGE"], self._show_home).pack(pady=(2, 0))
+        self._button(card, "Back to Home", t["BTN_ORANGE"], self._show_home).pack(pady=(2, 0))
 
         self._footer()
 
@@ -500,7 +500,7 @@ class ICDSAutoDeskApp:
 
         card = self._card(content_height=170)
         self._button(card, "Download", t["BTN_GREEN"], self._download_file).pack(pady=(6, 2))
-        self._button(card, "Back", t["BTN_ORANGE"], self._show_home).pack(pady=(2, 0))
+        self._button(card, "Back to Home", t["BTN_ORANGE"], self._show_home).pack(pady=(2, 0))
         self._footer()
         messagebox.showinfo("Success", f"{msg} generated successfully.")
 
@@ -541,7 +541,7 @@ class ICDSAutoDeskApp:
         upload_btn.pack()
 
         self._button(card, "Generate Report", t["BTN_TEAL"], self._generate_report_from_file).pack()
-        self._button(card, "Back", t["BTN_ORANGE"], self._show_home).pack()
+        self._button(card, "Back to Home", t["BTN_ORANGE"], self._show_home).pack()
 
         self._footer()
 
