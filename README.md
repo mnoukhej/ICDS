@@ -4,17 +4,12 @@
     ICDS AutoDesk is an automated desktop tool designed to simplify the generation of ICDS (Integrated Child Development Services) reports.
     It provides ready-to-use Excel formats, processes completed data, and generates final reports with accurate stock and balance calculations.
 
-# ✨ Key Features
-
-    📑 Format Generator – Create standardized monthly report templates
-
-    📊 Report Generator – Generate final reports from completed formats
-
-    🍲 Food Stock Management – Track stock, consumption, and balances
-
-    📅 Holiday & Sunday Handling – Auto-format special days including optional Polio campaigns
-
-    ⚡ Automation & Error Handling – Progress tracking with validation and recovery
+### ✨ Key Features
+- 📑 Format Generator – Create standardized monthly report templates
+- 📊 Report Generator – Generate final reports from completed formats
+- 🍲 Food Stock Management – Track stock, consumption, and balances
+- 📅 Holiday & Sunday Handling – Auto-format special days including optional Polio campaigns
+- ⚡ Automation & Error Handling – Progress tracking with validation and recovery
 
 ## Folder Structure
 
@@ -25,6 +20,13 @@
 ├── Format_Generator.ipynb
 ├── Generate_Format.py
 ├── Generate_Report.py
+├── ICDS Report
+│   ├── Report
+│   │   ├── repo_gen.py
+│   │   └── reportGenrator_For_ICDS.ipynb
+│   └── Report_Format
+│       ├── formarGen.py
+│       └── formarGenerator.ipynb
 ├── ICDS_App
 │   ├── Application.exe
 │   ├── Application.py
@@ -54,57 +56,37 @@
 
 
 ## ⚙️ Modules
-# 📝 Format Generator (Generate_Format.py)
+### 📝 Format Generator
+- Generates monthly ICDS report Excel templates  
+- Applies formatting for Sundays, holidays, and Polio campaign days  
+- Creates sheets for daily reporting and stock management  
 
-    Generates monthly ICDS report Excel templates
+### 📊 Report Generator (Generate_Report.py)
+- Processes completed format files to generate final reports
+- Calculates food consumption & stock balances
+- Supports multiple meal types (Rice/Khichdi days)
+- Tracks progress with error handling
 
-    Applies formatting for Sundays, holidays, and Polio campaign days
-
-    Creates sheets for daily reporting and stock management
-
-# 📊 Report Generator (Generate_Report.py)
-
-    Processes completed format files to generate final reports
-
-    Calculates food consumption & stock balances
-
-    Supports multiple meal types (Rice/Khichdi days)
-
-    Tracks progress with error handling
-
-# 🛠️ Core Functions (Main_Func.py)
-
-    Handles all date & ratio calculations
-
-    Manages stock balances with reset option
-
-    Provides consistent Excel formatting & styling
+### 🛠️ Core Functions (Main_Func.py)
+- Handles all date & ratio calculations
+- Manages stock balances with reset option
+- Provides consistent Excel formatting & styling
 
 
 
 ## 🚀 Installation
 
 1. Clone the repository:
-
-    git clone <repo-url>
-    cd ICDS_AutoDesk
-
-
-2. Install dependencies:
-
-    pip install -r requirements.txt
+git clone https://github.com/mnoukhej/ICDS.git
 
 
 3. Run the setup script (Windows only):
-
-    setup.bat
+setup.bat
 
 
 ## 📦 Dependencies
-
-    Python 3.7+
-
-    pandas
+- Python 3.7+
+- pandas
 
     openpyxl
 
@@ -120,19 +102,16 @@
 
 <hr>
 
-## 📸 Screenshots
-    ![App Screenshot](logo.png)
+### 📸 Screenshots
+![App Screenshot](logo.png)
 
 
-## ▶️ Usage
-    Run the application:
+### ▶️ Usage
+- Run the application:
     python Application.py
 
 ## 📜 License
 This project is licensed under the terms of the [MIT License](ICDS_App/Txt_Files/LICENSE.txt).
 
 
-### 📝 Format Generator
-- Generates monthly ICDS report Excel templates  
-- Applies formatting for Sundays, holidays, and Polio campaign days  
-- Creates sheets for daily reporting and stock management  
+
