@@ -1,0 +1,30 @@
+name: Update Folder Tree
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run update script
+        run: |
+          python update_tree.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'mnoukhej'
+          git config --global user.email 'mnoukhej@gmail.com'
+          git add README.md
+          git diff-index --quiet HEAD || git commit -m "Auto-update folder structure in README"
+          git push
