@@ -42,6 +42,18 @@ echo Creating .gitignore file...
     echo .vscode/
     echo .DS_Store
     echo build/
+    echo dist/
+    echo *.egg-info/
+    echo *.egg
+    echo .pytest_cache/ 
+    echo .coverage
+    echo .mypy_cache/
+    echo .tox/
+    echo .coverage.*
+    echo .ipynb_checkpoints/
+    echo *.exe
+    echo /SetupFile/
+    echo .spec
 ) > .gitignore
 echo .gitignore file created.
 

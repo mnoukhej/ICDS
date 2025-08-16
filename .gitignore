@@ -10,5 +10,15 @@ db.sqlite3
 .vscode/
 .DS_Store
 build/
+dist/
+*.egg-info/
+*.egg
+.pytest_cache/ 
+.coverage
+.mypy_cache/
+.tox/
+.coverage.*
+.ipynb_checkpoints/
 *.exe
 /SetupFile/
+.spec
