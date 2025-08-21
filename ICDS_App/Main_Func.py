@@ -766,3 +766,5 @@ def Report_Generator_py(file_path, folder_location):
     wb.save(output_path)
     print("Workbook saved successfully!")
     print(f"Output path: {output_path}")
+
+    return icds_sheet
