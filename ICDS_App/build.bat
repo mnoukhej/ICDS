@@ -3,32 +3,40 @@ REM ================================
 REM Build Script for ICDS_App
 REM ================================
 
-REM Check if venv exists
-if not exist ".venv\" (
-    echo Virtual environment not found. Creating one...
-    python -m venv .venv
+REM Step 1: Look for setup.bat
+if exist setup.bat (
+    echo Running setup.bat for environment setup...
+    call setup.bat
+) else (
+    echo setup.bat not found. Performing inline setup...
 
-    echo Installing requirements...
-    call .venv\Scripts\activate.bat
-    pip install --upgrade pip
-    if exist requirements.txt (
-        pip install -r requirements.txt
-    ) else (
-        echo requirements.txt not found. Skipping...
+    REM Check if venv exists
+    if not exist ".venv\" (
+        echo Virtual environment not found. Creating one...
+        python -m venv .venv
+
+        echo Installing requirements...
+        call .venv\Scripts\activate.bat
+        pip install --upgrade pip
+        if exist requirements.txt (
+            pip install -r requirements.txt
+        ) else (
+            echo requirements.txt not found. Skipping...
+        )
+        deactivate
     )
-    deactivate
 )
 
-REM Activate venv
+REM Step 2: Activate venv
 call .venv\Scripts\activate.bat
 
-REM Clean old build/dist if they exist
+REM Step 3: Clean old build/dist if they exist
 echo Cleaning old build files...
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 if exist __pycache__ rmdir /s /q __pycache__
 
-REM Run PyInstaller inside venv
+REM Step 4: Run PyInstaller inside venv
 echo Building executable...
 python -m PyInstaller --noconsole --onefile --icon=icon.ico --add-data "logo.png;." Application.py
 
