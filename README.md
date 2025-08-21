@@ -31,11 +31,13 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   │   ├── LICENSE.txt
 │   │   ├── README_AFTER.txt
 │   │   └── README_BEFORE.txt
+│   ├── build.bat
 │   ├── holiday_list.py
 │   ├── icon.ico
 │   ├── logo.png
 │   ├── requirements.txt
-│   └── setup.bat
+│   ├── setup.bat
+│   └── update_tree.py
 ├── Main_Func.py
 ├── README.md
 ├── Report_Generator.ipynb
