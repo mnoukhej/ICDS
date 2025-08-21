@@ -1,4 +1,5 @@
-# List of holidays
+# holiday_list.py
+# This file contains a list of holidays for the ICDS application.
 
 # List of holidays
 holidays = {
