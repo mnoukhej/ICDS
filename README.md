@@ -21,9 +21,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 ├── Generate_Format.py
 ├── Generate_Report.py
 ├── ICDS_App
-│   ├── Application.exe
 │   ├── Application.py
-│   ├── Application.spec
 │   ├── Main_Func.py
 │   ├── README.md
 │   ├── SetupBuilder.iss
