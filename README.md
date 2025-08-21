@@ -41,6 +41,9 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 ├── Main_Func.py
 ├── README.md
 ├── Report_Generator.ipynb
+├── SetupFile
+│   ├── ICDSAutoDesk Setup.exe
+│   └── icon.ico
 ├── holiday_list.py
 ├── logo.png
 ├── requirements.txt
