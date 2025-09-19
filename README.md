@@ -16,22 +16,6 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 <!-- TREE_START -->
 ```
 ├── App.py
-├── App_Mongo
-│   ├── Application.py
-│   ├── Main_Func.py
-│   ├── README.md
-│   ├── SetupBuilder.iss
-│   ├── Txt_Files
-│   │   ├── LICENSE.txt
-│   │   ├── README_AFTER.txt
-│   │   └── README_BEFORE.txt
-│   ├── build.bat
-│   ├── holiday_list.py
-│   ├── icon.ico
-│   ├── logo.png
-│   ├── requirements.txt
-│   ├── setup.bat
-│   └── update_tree.py
 ├── Application.py
 ├── Format_Generator.ipynb
 ├── Generate_Format.py
@@ -55,6 +39,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 ├── Main_Func.py
 ├── README.md
 ├── Report_Generator.ipynb
+├── debug.ipynb
 ├── holiday_list.py
 ├── logo.png
 ├── requirements.txt
