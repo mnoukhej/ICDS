@@ -313,7 +313,8 @@ def Report_Generator_py(file_path, folder_location):
 
 
 
-    # === HELPER FUNCTIONS ===
+    # ======== HELPER FUNCTIONS ========
+
     def convert_to_int(value):
         if value == "-": return value
         if pd.isna(value): return 0
@@ -434,6 +435,62 @@ def Report_Generator_py(file_path, folder_location):
         return icds_sheet
 
 
+    def shift_balance_to_next(icds_sheet, item_name, khichdi_days=None):
+        """
+        Adjusts Total Exp. based on Balance.
+        
+        - For Daal: if Balance < Total Exp, put Balance in the next Khichdi day row.
+        - For Oil, Salt: if Balance < Total Exp, put Balance in the immediate next row.
+        """
+        balance_col = f"{item_name} Balance"
+        exp_col = f"Total {item_name} Exp."
+
+        if balance_col not in icds_sheet.columns or exp_col not in icds_sheet.columns:
+            print(f"⚠ Columns missing: Cannot adjust {item_name}")
+            return icds_sheet
+
+        balance = pd.to_numeric(icds_sheet[balance_col], errors="coerce")
+        exp = pd.to_numeric(icds_sheet[exp_col], errors="coerce")
+
+        for i in range(len(icds_sheet) - 1):
+            if pd.notna(balance.iloc[i]) and balance.iloc[i] != 0:
+                if pd.notna(exp.iloc[i]) and balance.iloc[i] < exp.iloc[i]:
+
+                    if item_name.lower() == "daal" and khichdi_days is not None:
+                        # find the next Khichdi day row
+                        next_rows = icds_sheet[(icds_sheet.index > i) & (icds_sheet["Days"].isin(khichdi_days))]
+                        if not next_rows.empty:
+                            next_idx = next_rows.index[0]
+                            icds_sheet.at[next_idx, exp_col] = balance.iloc[i]
+
+                    else:  # Oil or Salt → just next row
+                        icds_sheet.at[i+1, exp_col] = balance.iloc[i]
+
+        return icds_sheet
+    
+
+
+    def recalc_all_totals(icds_sheet, total_label="Total"):
+        """
+        Recalculate 'Total' row for Daal, Oil, and Salt expenditure columns.
+        """
+        target_columns = ["Total Daal Exp.", "Total Oil Exp.", "Total Salt Exp."]
+
+        # locate the "Total" row
+        total_row = icds_sheet[icds_sheet["Days"] == total_label]
+        if total_row.empty:
+            print(f"⚠ No '{total_label}' row found.")
+            return icds_sheet
+
+        total_index = total_row.index[0]
+
+        for col in target_columns:
+            if col in icds_sheet.columns:
+                # sum excluding the total row itself
+                new_total = pd.to_numeric(icds_sheet.loc[icds_sheet.index != total_index, col], errors="coerce").sum()
+                icds_sheet.at[total_index, col] = round(new_total, 3)  # keep 3 decimals
+
+        return icds_sheet
 
 
 
@@ -613,7 +670,14 @@ def Report_Generator_py(file_path, folder_location):
     for col in columns_to_convert:
         icds_sheet[col] = icds_sheet[col].apply(convert_to_int)
         
-        
+
+   # Apply adjustments
+    icds_sheet = shift_balance_to_next(icds_sheet, "Daal", khichdi_days)
+    icds_sheet = shift_balance_to_next(icds_sheet, "Oil")
+    icds_sheet = shift_balance_to_next(icds_sheet, "Salt")    
+            
+    icds_sheet = recalc_all_totals(icds_sheet)
+
 
     rename_mapping = {
         "Mothers Rice Day": "Rice Day (Mothers)",
@@ -638,6 +702,7 @@ def Report_Generator_py(file_path, folder_location):
 
     # Rename columns
     icds_sheet.rename(columns=rename_mapping, inplace=True)
+    icds_sheet = icds_sheet.applymap(lambda x: f"{x:.3f}" if isinstance(x, float) else x)
 
 
     # Initialize a new workbook and add a worksheet
