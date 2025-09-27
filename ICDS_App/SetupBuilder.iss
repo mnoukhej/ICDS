@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ICDS AutoDesk"
-#define MyAppVersion "2.5"
+#define MyAppVersion "3.0"
 #define MyAppPublisher "Muhammad Noukhez"
 #define MyAppURL "https://www.CodeX404.in/"
 #define MyAppExeName "Application.exe"
@@ -34,15 +34,15 @@ ArchitecturesAllowed=x64compatible
 ; the 64-bit view of the registry.
 ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
-LicenseFile=D:\ICDS\ICDS_App\Txt_Files\LICENSE.txt
-InfoBeforeFile=D:\ICDS\ICDS_App\Txt_Files\README_BEFORE.txt
-InfoAfterFile=D:\ICDS\ICDS_App\Txt_Files\README_AFTER.txt
+LicenseFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\LICENSE.txt
+InfoBeforeFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_BEFORE.txt
+InfoAfterFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_AFTER.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=C:\Users\MUHAMMAD NOUKHEZ\Downloads\ICDS AutoDesk Setup
 OutputBaseFilename=ICDSAutoDesk Setup
-SetupIconFile=D:\ICDS\ICDS_App\icon.ico
+SetupIconFile=D:\Codding\Projects\ICDS\ICDS_App\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -54,8 +54,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\ICDS\ICDS_App\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\ICDS\ICDS_App\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Codding\Projects\ICDS\ICDS_App\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Codding\Projects\ICDS\ICDS_App\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
