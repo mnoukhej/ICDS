@@ -15,11 +15,17 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 
 <!-- TREE_START -->
 ```
-├── App.py
-├── Application.py
-├── Format_Generator.ipynb
-├── Generate_Format.py
-├── Generate_Report.py
+├── Code
+│   ├── App.py
+│   ├── Application.py
+│   ├── Format_Generator.ipynb
+│   ├── Generate_Format.py
+│   ├── Generate_Report.py
+│   ├── Main_Func.py
+│   ├── Report_Generator.ipynb
+│   ├── debug.ipynb
+│   ├── holiday_list.py
+│   └── logo.png
 ├── ICDS_App
 │   ├── Application.py
 │   ├── Application.spec
@@ -37,12 +43,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   ├── requirements.txt
 │   ├── setup.bat
 │   └── update_tree.py
-├── Main_Func.py
 ├── README.md
-├── Report_Generator.ipynb
-├── debug.ipynb
-├── holiday_list.py
-├── logo.png
 ├── requirements.txt
 ├── setup.bat
 └── update_tree.py
