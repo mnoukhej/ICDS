@@ -31,7 +31,6 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   ├── Application.spec
 │   ├── Dockerfile
 │   ├── Main_Func.py
-│   ├── README.md
 │   ├── SetupBuilder.iss
 │   ├── Txt_Files
 │   │   ├── LICENSE.txt
@@ -42,8 +41,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   ├── icon.ico
 │   ├── logo.png
 │   ├── requirements.txt
-│   ├── setup.bat
-│   └── update_tree.py
+│   └── setup.bat
 ├── README.md
 ├── requirements.txt
 ├── setup.bat
