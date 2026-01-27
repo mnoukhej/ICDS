@@ -32,6 +32,8 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 ├── requirements.txt
 ├── setup.bat
 └── update_tree.py
+
+
 ```
 <!-- TREE_END -->
 
@@ -72,10 +74,11 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
    python Application.py
 
 ## 📦 Dependencies
-- Python 3.7+
+- Python 3.12
 - pandas
 - openpyxl
 - numpy
+- pywin32
 
 ## 🔧 Configuration
 - Update holiday_list.py to add or modify holidays
