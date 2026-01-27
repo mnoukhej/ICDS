@@ -13,7 +13,7 @@ if exist setup.bat (
     REM Check if venv exists
     if not exist ".venv\" (
         echo Virtual environment not found. Creating one...
-        python -m venv .venv
+        py -3.12 -m venv .venv
 
         echo Installing requirements...
         call .venv\Scripts\activate.bat

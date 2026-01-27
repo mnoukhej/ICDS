@@ -6,7 +6,7 @@ echo =====================================
 :: Create virtual environment if not exists
 if not exist ".venv" (
     echo Creating virtual environment...
-    python -m venv .venv
+    py -3.12 -m venv .venv
     echo [OK] .venv created
 ) else (
     echo [SKIP] .venv already exists
@@ -70,6 +70,24 @@ if not exist ".gitignore" (
 ) else (
     echo [SKIP] .gitignore already exists
 )
+
+:: Create .dockerignore if not exists
+if not exist ".gitignore" (
+    echo Creating .dockerignore...
+    (
+        echo .venv> .dockerignore
+        echo __pycache__>> .dockerignore
+        echo build>> .dockerignore
+        echo dist>> .dockerignore
+        echo .git>> .dockerignore
+
+    ) > .dockerignore
+    echo [OK] .dockerignore created
+) else (
+    echo [SKIP] .dockerignore already exists
+)
+
+
 
 :: Create GitHub Action workflow only if not exists
 if not exist .github\workflows\update-readme.yml (

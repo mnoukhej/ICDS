@@ -6,7 +6,7 @@ echo =====================================
 :: Create virtual environment if not exists
 if not exist ".venv" (
     echo Creating virtual environment...
-    python -m venv .venv
+    py -3.12 -m venv .venv
     echo [OK] .venv created
 ) else (
     echo [SKIP] .venv already exists
