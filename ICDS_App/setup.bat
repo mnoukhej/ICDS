@@ -89,60 +89,6 @@ if not exist ".gitignore" (
 
 
 
-:: Create GitHub Action workflow only if not exists
-if not exist .github\workflows\update-readme.yml (
-    mkdir .github\workflows 2>nul
-    > .github\workflows\update-readme.yml (
-        echo name: Update README Folder Tree
-        echo.
-        echo on:
-        echo   push:
-        echo     branches:
-        echo       - main
-        echo   workflow_dispatch:
-        echo.
-        echo permissions:
-        echo   contents: write
-        echo.
-        echo jobs:
-        echo   update-readme:
-        echo     runs-on: ubuntu-latest
-        echo.
-        echo     steps:
-        echo       - name: Checkout repo
-        echo         uses: actions/checkout@v4
-        echo         with:
-        echo           fetch-depth: 0
-        echo.
-        echo       - name: Set up Python
-        echo         uses: actions/setup-python@v5
-        echo         with:
-        echo           python-version: '3.9'
-        echo.
-        echo       - name: Install dependencies
-        echo         run: pip install -r requirements.txt ^|^| true
-        echo.
-        echo       - name: Update README.md with folder structure
-        echo         run: python update_tree.py
-        echo.
-        echo       - name: Commit and push changes
-        echo         env:
-        echo           GITHUB_TOKEN: ${{^ secrets.GITHUB_TOKEN ^}}
-        echo         run: ^|
-        echo           git config --global user.name "mnoukhej"
-        echo           git config --global user.email "mnoukhej@gmail.com"
-        echo.
-        echo           git add README.md
-        echo           git diff-index --quiet HEAD ^|^| git commit -m "🔄 Auto-update folder structure in README.md"
-        echo.
-        echo           git config commit.gpgsign true ^|^| true
-        echo           git push
-    )
-    echo [OK] GitHub Action workflow created
-) else (
-    echo [SKIP] GitHub workflow already exists
-)
-
 
 echo =====================================
 echo Setup complete! Now you can run the server using run_server.bat
