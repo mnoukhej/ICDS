@@ -29,6 +29,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 ├── ICDS_App
 │   ├── Application.py
 │   ├── Application.spec
+│   ├── Dockerfile
 │   ├── Main_Func.py
 │   ├── README.md
 │   ├── SetupBuilder.iss
