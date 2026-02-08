@@ -1,4 +1,4 @@
-# ICDS AutoDesk
+# 📁 Icds
 
 ## Project Overview
 ICDS AutoDesk is an automated desktop tool designed to simplify the generation of ICDS (Integrated Child Development Services) reports.
@@ -79,7 +79,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 
 2. Change Directroy
    ```bash
-   cd tmplt
+   cd ICDS
 
 3. Run the setup script (Windows only):
    ```bash
