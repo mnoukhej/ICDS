@@ -77,16 +77,20 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
    ```bash
    git clone https://github.com/mnoukhej/ICDS.git
 
-2. Run the setup script (Windows only):
+2. Change Directroy
+   ```bash
+   cd tmplt
+
+3. Run the setup script (Windows only):
    ```bash
    ./setup.bat
 
-3. Run the application:
+4. Run the application:
    ```bash
    python Application.py
 
 ## 📦 Dependencies
-- Python 3.7+
+- Python 3.9+
 - pandas
 - openpyxl
 - numpy
@@ -96,4 +100,11 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 - Edit paths in Main_Func.py to change default save location
 
 ## 📜 License
-This project is licensed under the terms of the [MIT License](ICDS_App/Txt_Files/LICENSE.txt).
+
+
+## 👤 Author
+
+**Muhammad Noukhez**  
+📧 Email: mnoukhej@gmail.com  
+🐙 GitHub: https://github.com/mnoukhej  
+💼 LinkedIn: https://www.linkedin.com/in/mnoukhej/
