@@ -3,7 +3,9 @@
 ; Non-commercial use only
 
 #define MyAppName "ICDS AutoDesk"
-#define MyAppVersion "4.0"
+#ifndef MyAppVersion
+  #define MyAppVersion "4.0"
+#endif
 #define MyAppPublisher "Muhammad Noukhez"
 #define MyAppURL "https://www.CodeX404.in/"
 #define MyAppExeName "Application.exe"
@@ -24,6 +26,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
+CloseApplications=yes
 
 ; ===== Version / File Details =====
 VersionInfoDescription=Holidays list of 2026 updated in this version
@@ -43,14 +46,14 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\LICENSE.txt
-InfoBeforeFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_BEFORE.txt
-InfoAfterFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_AFTER.txt
+LicenseFile=Txt_Files\LICENSE.txt
+InfoBeforeFile=Txt_Files\README_BEFORE.txt
+InfoAfterFile=Txt_Files\README_AFTER.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\mnouk\Downloads
-OutputBaseFilename=ICDSAutoDesk Setup {#MyAppVersion}
-SetupIconFile=D:\Codding\Projects\ICDS\ICDS_App\icon.ico
+OutputDir=output
+OutputBaseFilename=ICDSAutoDesk_Setup_v{#MyAppVersion}
+SetupIconFile=icon.ico
 SolidCompression=yes
 WizardStyle=modern dynamic
 
@@ -61,7 +64,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Codding\Projects\ICDS\ICDS_App\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

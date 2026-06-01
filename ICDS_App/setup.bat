@@ -95,4 +95,5 @@ echo Setup complete! Now you can run the server using run_server.bat
 echo =====================================
 
 
+if /I "%NO_PAUSE%"=="1" exit /b 0
 pause

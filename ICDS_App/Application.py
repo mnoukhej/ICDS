@@ -5,11 +5,18 @@ import pandas as pd
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageDraw, ImageTk
 import calendar
+import json
 import re
 import math
 import shutil
 import os
+import tempfile
+import threading
+import subprocess
 import sys
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
+from packaging.version import InvalidVersion, parse as parse_version
 from Main_Func import Format_Generator, Report_Generator_py
 
 
@@ -21,8 +28,72 @@ def resource_path(relative_path: str) -> str:
     try:
         base_path = sys._MEIPASS  # PyInstaller temp folder
     except AttributeError:
-        base_path = os.path.abspath(".")
+        base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
+
+
+APP_NAME = "ICDS AutoDesk"
+VERSION_URL = "https://raw.githubusercontent.com/mnoukhej/ICDS/main/version.json"
+UPDATE_TIMEOUT_SECONDS = 15
+DOWNLOAD_CHUNK_SIZE = 1024 * 64
+
+
+def load_current_version():
+    version_file_candidates = [
+        resource_path("version.json"),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "version.json")),
+    ]
+
+    for version_file in version_file_candidates:
+        if not os.path.exists(version_file):
+            continue
+
+        try:
+            with open(version_file, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+            version = str(data.get("version", "")).strip()
+            if version:
+                return version
+        except Exception as exc:
+            print(f"Could not read local version file '{version_file}': {exc}")
+
+    return "0.0"
+
+
+CURRENT_VERSION = load_current_version()
+
+
+def check_for_update():
+    request = Request(
+        VERSION_URL,
+        headers={"User-Agent": f"{APP_NAME}/{CURRENT_VERSION}"},
+    )
+
+    with urlopen(request, timeout=UPDATE_TIMEOUT_SECONDS) as response:
+        data = json.loads(response.read().decode("utf-8"))
+
+    latest_version = str(data["version"]).strip()
+    download_url = str(data["url"]).strip()
+
+    if not latest_version or not download_url:
+        raise ValueError("version.json must contain both 'version' and 'url'.")
+
+    try:
+        if parse_version(latest_version) > parse_version(CURRENT_VERSION):
+            return latest_version, download_url
+    except InvalidVersion as exc:
+        raise ValueError(f"Invalid version value in update metadata: {exc}") from exc
+
+    return None, None
+
+
+def installer_filename(version, url):
+    file_name = os.path.basename(urlparse(url).path)
+    if not file_name:
+        file_name = f"ICDSAutoDesk_Setup_v{version}.exe"
+    if not file_name.lower().endswith(".exe"):
+        file_name = f"{file_name}.exe"
+    return file_name
 
 
 # -------------------------------
@@ -100,9 +171,12 @@ class ICDSAutoDeskApp:
         self.generated_file_path = None
         self.report_file_path = None
         self.selected_file_label = None
+        self.update_window = None
+        self.update_progress = None
 
         # first screen
         self._show_home()
+        self.root.after(1200, self._check_for_updates_async)
 
     # -------------------------
     # Utilities - Resources/Style
@@ -336,6 +410,160 @@ class ICDSAutoDeskApp:
                     shutil.rmtree(path)
                 except Exception as e:
                     print(f"Error clearing {folder}: {e}")
+
+    # -------------------------
+    # Auto update
+    # -------------------------
+    def _check_for_updates_async(self):
+        if getattr(self, "_update_check_started", False):
+            return
+        self._update_check_started = True
+        threading.Thread(target=self._check_for_updates_worker, daemon=True).start()
+
+    def _check_for_updates_worker(self):
+        try:
+            latest_version, download_url = check_for_update()
+        except Exception as e:
+            print(f"Update check failed: {e}")
+            return
+
+        if latest_version and download_url:
+            self.root.after(
+                0,
+                lambda: self._prompt_for_update(latest_version, download_url),
+            )
+
+    def _prompt_for_update(self, latest_version, download_url):
+        should_update = messagebox.askyesno(
+            "Update Available",
+            (
+                f"A new version ({latest_version}) is available.\n\n"
+                f"Current version: {CURRENT_VERSION}\n"
+                "Do you want to download and install it now?"
+            ),
+            parent=self.root,
+        )
+
+        if should_update:
+            self._download_and_install_async(latest_version, download_url)
+
+    def _download_and_install_async(self, latest_version, download_url):
+        self._show_update_progress(f"Downloading ICDS AutoDesk {latest_version}...")
+        threading.Thread(
+            target=self._download_and_install_worker,
+            args=(latest_version, download_url),
+            daemon=True,
+        ).start()
+
+    def _download_and_install_worker(self, latest_version, download_url):
+        try:
+            temp_dir = tempfile.mkdtemp(prefix="icds_update_")
+            file_path = os.path.join(temp_dir, installer_filename(latest_version, download_url))
+
+            request = Request(
+                download_url,
+                headers={"User-Agent": f"{APP_NAME}/{CURRENT_VERSION}"},
+            )
+            with urlopen(request, timeout=UPDATE_TIMEOUT_SECONDS) as response, open(file_path, "wb") as installer_file:
+                while True:
+                    chunk = response.read(DOWNLOAD_CHUNK_SIZE)
+                    if not chunk:
+                        break
+                    installer_file.write(chunk)
+        except Exception as e:
+            self.root.after(0, lambda error=str(e): self._show_update_error(error))
+            return
+
+        self.root.after(0, lambda: self._run_installer(file_path))
+
+    def _show_update_progress(self, message):
+        if self.update_window and self.update_window.winfo_exists():
+            self._close_update_progress()
+
+        t = self.THEMES[self.theme_mode]
+        self.update_window = tk.Toplevel(self.root)
+        self.update_window.title("Installing Update")
+        self.update_window.transient(self.root)
+        self.update_window.resizable(False, False)
+        self.update_window.configure(bg=t["CARD_BG"])
+        self.update_window.geometry("360x140")
+        self.update_window.protocol("WM_DELETE_WINDOW", lambda: None)
+
+        tk.Label(
+            self.update_window,
+            text="Downloading update",
+            font=("Segoe UI", 13, "bold"),
+            fg=t["FG_TEXT"],
+            bg=t["CARD_BG"],
+        ).pack(pady=(18, 8))
+
+        tk.Label(
+            self.update_window,
+            text=message,
+            font=("Segoe UI", 10),
+            fg=t["FG_MUTED"],
+            bg=t["CARD_BG"],
+        ).pack(pady=(0, 12))
+
+        self.update_progress = ttk.Progressbar(
+            self.update_window,
+            mode="indeterminate",
+            length=280,
+        )
+        self.update_progress.pack(pady=(0, 18))
+        self.update_progress.start(12)
+
+        self.update_window.grab_set()
+        self.update_window.update_idletasks()
+
+        x = self.root.winfo_rootx() + (self.root.winfo_width() - self.update_window.winfo_width()) // 2
+        y = self.root.winfo_rooty() + (self.root.winfo_height() - self.update_window.winfo_height()) // 2
+        self.update_window.geometry(f"+{x}+{y}")
+
+    def _close_update_progress(self):
+        if self.update_progress is not None:
+            try:
+                self.update_progress.stop()
+            except Exception:
+                pass
+            self.update_progress = None
+
+        if self.update_window and self.update_window.winfo_exists():
+            try:
+                self.update_window.grab_release()
+            except Exception:
+                pass
+            self.update_window.destroy()
+
+        self.update_window = None
+
+    def _show_update_error(self, error_message):
+        self._close_update_progress()
+        messagebox.showerror(
+            "Update Failed",
+            f"Could not download the latest installer.\n\n{error_message}",
+            parent=self.root,
+        )
+
+    def _run_installer(self, file_path):
+        self._close_update_progress()
+
+        try:
+            subprocess.Popen([file_path], cwd=os.path.dirname(file_path))
+        except Exception as e:
+            messagebox.showerror(
+                "Update Failed",
+                f"The downloaded installer could not be started.\n\n{e}",
+                parent=self.root,
+            )
+            return
+
+        messagebox.showinfo(
+            "Update Started",
+            "The installer has been launched. This app will close now so the update can continue.",
+            parent=self.root,
+        )
+        self.root.after(250, self.root.destroy)
 
     # -----------------------------------------------------------
     # Screens
