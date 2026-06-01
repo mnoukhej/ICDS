@@ -17,7 +17,7 @@ holidays = {
     "03 March 2026": "Doljatra",
     "21 March 2026": "Id-Ul-Fitre",
     "15 April 2026": "Bengali New Year’s Day (Nababarsha)",
-    "27 May 2026": "Id-Ud-Zoha",
+    "28 May 2026": "Id-Ud-Zoha",
     "26 June 2026": "Muharram",
     "15 August 2026": "Independence Day",
     "19 October 2026": "Durga Puja (Ashtami)",
