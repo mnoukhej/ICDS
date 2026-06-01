@@ -11,6 +11,7 @@ db.sqlite3
 .DS_Store
 build/
 dist/
+ICDS_App/output/
 *.egg-info/
 *.egg
 .pytest_cache/ 
