@@ -7,7 +7,7 @@
   #define MyAppVersion "4.0.0"
 #endif
 #define MyAppPublisher "Muhammad Noukhez"
-#define MyAppURL "https://www.CodeX404.in/"
+#define MyAppURL "https://codex404solutions.com/"
 #define MyAppExeName "Application.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
