@@ -41,11 +41,13 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   ├── icon.ico
 │   ├── logo.png
 │   ├── requirements.txt
-│   └── setup.bat
+│   ├── setup.bat
+│   └── updater.py
 ├── README.md
 ├── requirements.txt
 ├── setup.bat
-└── update_tree.py
+├── update_tree.py
+└── version.json
 ```
 <!-- TREE_END -->
 
