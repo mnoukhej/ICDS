@@ -111,6 +111,43 @@ def update_tree_section(content: str) -> str:
 
 
 # -----------------------------------
+# Update Developer Credit section
+# -----------------------------------
+def update_developer_credit(content: str) -> str:
+    credit_section = """## 👨‍💻 Developer & Organization Credit
+
+| **Attribute** | **Details** |
+| :--- | :--- |
+| 👤 **Developer Name** | **Muhammad Noukhez** |
+| 🏢 **Company Name** | **CodeX404 Solutions** |
+| 🌐 **Official Website** | [**codex404solutions.com**](https://codex404solutions.com/) |
+| 📧 **Email** | [mnoukhej@gmail.com](mailto:mnoukhej@gmail.com) |
+| 🐙 **GitHub** | [@mnoukhej](https://github.com/mnoukhej) |
+| 💼 **LinkedIn** | [linkedin.com/in/mnoukhej](https://www.linkedin.com/in/mnoukhej/) |
+
+---
+
+<div align="center">
+
+[![Developer: Muhammad Noukhez](https://img.shields.io/badge/Developer-Muhammad%20Noukhez-00f2fe?style=for-the-badge&logo=github&logoColor=black)](https://github.com/mnoukhej)
+[![Company: CodeX404 Solutions](https://img.shields.io/badge/Company-CodeX404%20Solutions-4facfe?style=for-the-badge&logo=rocket&logoColor=white)](https://codex404solutions.com/)
+[![Website: codex404solutions.com](https://img.shields.io/badge/Website-codex404solutions.com-667eea?style=for-the-badge&logo=googlechrome&logoColor=white)](https://codex404solutions.com/)
+
+<sub>Engineered & Maintained by **Muhammad Noukhez** • **CodeX404 Solutions** ([codex404solutions.com](https://codex404solutions.com/))</sub>
+
+</div>"""
+
+    patterns = [
+        r"## (?:👤|👨‍💻)?\s*(?:Author|Developer & Organization Credit)[\s\S]*?(?=\Z)",
+    ]
+    for pattern in patterns:
+        if re.search(pattern, content):
+            return re.sub(pattern, credit_section, content).rstrip() + "\n"
+
+    return content.rstrip() + "\n\n" + credit_section + "\n"
+
+
+# -----------------------------------
 # Main function
 # -----------------------------------
 def update_readme():
@@ -123,6 +160,7 @@ def update_readme():
     content = update_title(content, project_name)
     content = update_commands(content, repo_name)
     content = update_tree_section(content)
+    content = update_developer_credit(content)
 
     with open(README_FILE, "w", encoding="utf-8") as f:
         f.write(content)
