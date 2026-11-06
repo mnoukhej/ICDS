@@ -1,12 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_data_files
+
+customtkinter_datas = collect_data_files('customtkinter')
 
 a = Analysis(
     ['Application.py'],
     pathex=[],
     binaries=[],
-    datas=[('logo.png', '.')],
-    hiddenimports=[],
+    datas=[('logo.png', '.'), ('icon.ico', '.')] + customtkinter_datas,
+    hiddenimports=['customtkinter', 'darkdetect', 'PIL'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

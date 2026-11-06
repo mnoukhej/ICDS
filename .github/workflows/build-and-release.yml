@@ -69,7 +69,7 @@ jobs:
       - name: Build Executable with PyInstaller
         working-directory: ./ICDS_App
         run: |
-          python -m PyInstaller --noconsole --onefile --icon=icon.ico --add-data "logo.png;." Application.py
+          python -m PyInstaller Application.spec
 
       - name: Add Inno Setup Compiler to PATH
         shell: pwsh

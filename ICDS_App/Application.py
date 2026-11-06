@@ -1,5 +1,5 @@
 # Applicatin.py
-# ICDS AutoDesk — Professional Desktop Application Suite
+# ICDS AutoDesk — Modern Executive Desktop Suite (CustomTkinter)
 
 import os
 import sys
@@ -7,848 +7,682 @@ import re
 import math
 import shutil
 import calendar
+import threading
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
-from PIL import Image, ImageDraw, ImageTk
+from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk
 import pandas as pd
+import customtkinter as ctk
 
 from Main_Func import Format_Generator, Report_Generator_py
 from updater import check_for_updates_async, APP_VERSION
 
+# ----------------------------------------------------------------------
+# Modern CustomTkinter Base Configuration
+# ----------------------------------------------------------------------
+ctk.set_appearance_mode("System")  # Options: "System", "Dark", "Light"
+ctk.set_default_color_theme("blue")
 
-# -----------------------------
-# Resource Path Helper (PyInstaller & Dev friendly)
-# -----------------------------
+
 def resource_path(relative_path: str) -> str:
     """Get absolute path to resource, works for dev and for PyInstaller exe"""
     try:
-        base_path = sys._MEIPASS  # PyInstaller temp folder
+        base_path = sys._MEIPASS
     except AttributeError:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
 
-# ----------------------------------------------------------------------
-# Professional Design System & Color Tokens
-# ----------------------------------------------------------------------
-class ICDSAutoDeskApp:
-    THEMES = {
-        "light": {
-            # Sidebar Navigation (Deep Sleek Navy)
-            "SIDEBAR_BG": "#0F172A",          # Slate 900
-            "SIDEBAR_BORDER": "#1E293B",      # Slate 800
-            "NAV_ITEM_ACTIVE_BG": "#1E293B",  # Active item fill
-            "NAV_ITEM_HOVER_BG": "#1E293B",   # Hover item fill
-            "NAV_ITEM_ACTIVE_FG": "#38BDF8",  # Sky 400
-            "NAV_ITEM_INACTIVE_FG": "#94A3B8",# Slate 400
-            "NAV_ITEM_INDICATOR": "#38BDF8",  # Accent line
-            
-            # Main Canvas & Panels
-            "CANVAS_BG": "#F1F5F9",           # Slate 100 soft neutral workspace
-            "PANEL_BG": "#FFFFFF",            # Pure White card
-            "PANEL_BORDER": "#E2E8F0",        # Crisp thin border
-            "HEADER_BG": "#FFFFFF",           # Top header background
-            "HEADER_BORDER": "#E2E8F0",       # Header border line
-            
-            # Typography
-            "TEXT_TITLE": "#0F172A",          # Slate 900
-            "TEXT_BODY": "#334155",           # Slate 700
-            "TEXT_MUTED": "#64748B",          # Slate 500
-            "TEXT_FAINT": "#94A3B8",          # Slate 400
-            
-            # Primary Brand Accents
-            "BRAND_BLUE": "#2563EB",          # Blue 600
-            "BRAND_BLUE_HOVER": "#1D4ED8",    # Blue 700
-            "BRAND_GREEN": "#059669",         # Emerald 600
-            "BRAND_GREEN_HOVER": "#047857",   # Emerald 700
-            "BRAND_PURPLE": "#7C3AED",        # Violet 600
-            "BRAND_PURPLE_HOVER": "#6D28D9",
-            
-            # Form Inputs
-            "INPUT_BG": "#F8FAFC",            # Slate 50
-            "INPUT_BORDER": "#CBD5E1",        # Slate 300
-            "INPUT_FOCUS": "#3B82F6",         # Blue 500
-            
-            # Badge & Chips
-            "BADGE_BG": "#EFF6FF",            # Blue 50
-            "BADGE_FG": "#1D4ED8",            # Blue 700
-            "BADGE_BORDER": "#DBEAFE",
-            "SUCCESS_BG": "#ECFDF5",          # Emerald 50
-            "SUCCESS_FG": "#047857",          # Emerald 700
-            "SUCCESS_BORDER": "#A7F3D0",
-            
-            # Secondary Action Buttons
-            "BTN_SEC_BG": "#F1F5F9",
-            "BTN_SEC_HOVER": "#E2E8F0",
-            "BTN_SEC_FG": "#334155",
-            "BTN_SEC_BORDER": "#CBD5E1",
-        },
-        "dark": {
-            # Sidebar Navigation (Deep Obsidian)
-            "SIDEBAR_BG": "#090D16",          # Deepest Slate
-            "SIDEBAR_BORDER": "#1E293B",
-            "NAV_ITEM_ACTIVE_BG": "#1E293B",
-            "NAV_ITEM_HOVER_BG": "#131C2E",
-            "NAV_ITEM_ACTIVE_FG": "#38BDF8",
-            "NAV_ITEM_INACTIVE_FG": "#64748B",
-            "NAV_ITEM_INDICATOR": "#38BDF8",
-            
-            # Main Canvas & Panels
-            "CANVAS_BG": "#0F172A",           # Slate 900
-            "PANEL_BG": "#1E293B",            # Slate 800
-            "PANEL_BORDER": "#334155",        # Slate 700
-            "HEADER_BG": "#1E293B",           # Header background
-            "HEADER_BORDER": "#334155",
-            
-            # Typography
-            "TEXT_TITLE": "#F8FAFC",          # Slate 50
-            "TEXT_BODY": "#CBD5E1",           # Slate 300
-            "TEXT_MUTED": "#94A3B8",          # Slate 400
-            "TEXT_FAINT": "#64748B",          # Slate 500
-            
-            # Primary Brand Accents
-            "BRAND_BLUE": "#3B82F6",          # Blue 500
-            "BRAND_BLUE_HOVER": "#60A5FA",    # Blue 400
-            "BRAND_GREEN": "#10B981",         # Emerald 500
-            "BRAND_GREEN_HOVER": "#34D399",
-            "BRAND_PURPLE": "#8B5CF6",
-            "BRAND_PURPLE_HOVER": "#A78BFA",
-            
-            # Form Inputs
-            "INPUT_BG": "#0F172A",            # Deep Slate 900
-            "INPUT_BORDER": "#475569",        # Slate 600
-            "INPUT_FOCUS": "#60A5FA",
-            
-            # Badge & Chips
-            "BADGE_BG": "#172554",            # Blue 950
-            "BADGE_FG": "#93C5FD",            # Blue 300
-            "BADGE_BORDER": "#1E40AF",
-            "SUCCESS_BG": "#064E3B",          # Emerald 950
-            "SUCCESS_FG": "#6EE7B7",          # Emerald 300
-            "SUCCESS_BORDER": "#065F46",
-            
-            # Secondary Action Buttons
-            "BTN_SEC_BG": "#334155",
-            "BTN_SEC_HOVER": "#475569",
-            "BTN_SEC_FG": "#F8FAFC",
-            "BTN_SEC_BORDER": "#475569",
-        },
-    }
+class ICDSAutoDeskApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
 
-    def __init__(self, root):
-        self.root = root
-        self.root.title("ICDS AutoDesk — Automated Report Engine")
-
-        # Enterprise desktop aspect ratio (880x620)
-        window_width, window_height = 880, 620
-        sw = self.root.winfo_screenwidth()
-        sh = self.root.winfo_screenheight()
+        # Configure Window
+        self.title("ICDS AutoDesk — Professional Report Engine")
+        window_width, window_height = 960, 640
+        sw = self.winfo_screenwidth()
+        sh = self.winfo_screenheight()
         x = int((sw - window_width) / 2)
         y = int((sh - window_height) / 2) - 30
-        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        self.root.minsize(820, 560)
+        self.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.minsize(900, 600)
 
-        self.theme_mode = "light"
-        self.current_screen = "home"
-        self._image_cache = {}
-
-        # Set titlebar and window icons
+        # Application Icon
         try:
-            self.root.iconbitmap(resource_path("icon.ico"))
+            self.iconbitmap(resource_path("icon.ico"))
         except Exception:
             try:
-                self.root.iconbitmap(resource_path("app_icon.ico"))
+                self.iconbitmap(resource_path("app_icon.ico"))
             except Exception:
                 pass
 
-        self._set_iconphoto_png(resource_path("logo.png"))
-
-        # Cached Logo
-        self.logo_tk = None
+        # Load Logo for Sidebar
+        self.logo_image = None
         self._load_logo()
 
-        # Init Ttk Themes
-        self._style_ttk_for_theme()
-
-        # Temporary folders cleanup
+        # Temporary files management
         self._clear_temp_folders()
 
-        # State trackers
+        # State Variables
+        self.current_screen = "home"
         self.generated_file_path = None
         self.report_file_path = None
-        self.selected_file_label = None
+        self.download_file_type = "Monthly Report"
 
-        # Build Master Layout (Sidebar + Topbar + Content Area)
-        self._build_master_scaffold()
+        # Build Master UI Grid Layout
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-        # Render initial screen
-        self._navigate_to("home")
+        self._build_sidebar()
+        self._build_content_area()
 
-        # Non-blocking background check for updates after 2.5s
-        self.root.after(2500, lambda: check_for_updates_async(self.root, silent=True))
+        # Start on Dashboard
+        self.navigate_to("home")
 
-    # ------------------------------------------------------------------
-    # Resource & Graphic Utilities
-    # ------------------------------------------------------------------
-    def _set_iconphoto_png(self, path: str):
-        try:
-            if os.path.exists(path):
-                icon_img = tk.PhotoImage(file=path)
-                self.root.iconphoto(False, icon_img)
-                self._icon_img_ref = icon_img
-        except Exception:
-            pass
+        # Non-blocking Update Check after 2.5s
+        self.after(2500, lambda: check_for_updates_async(self, silent=True))
 
     def _load_logo(self):
         try:
             logo_path = resource_path("logo.png")
             if os.path.exists(logo_path):
-                img = Image.open(logo_path).resize((40, 40), Image.LANCZOS)
-                self.logo_tk = ImageTk.PhotoImage(img)
+                pil_img = Image.open(logo_path)
+                self.logo_image = ctk.CTkImage(
+                    light_image=pil_img,
+                    dark_image=pil_img,
+                    size=(36, 36)
+                )
         except Exception as e:
             print("Logo load failed:", e)
 
-    def _create_rounded_image(self, width, height, bg_color, border_color=None, border_width=1, radius=8):
-        """2x supersampled anti-aliased rounded rectangle with crisp rendering."""
-        key = (width, height, bg_color, border_color, border_width, radius)
-        if key in self._image_cache:
-            return self._image_cache[key]
-
-        scale = 2
-        w_s, h_s, r_s = width * scale, height * scale, radius * scale
-        img = Image.new("RGBA", (w_s, h_s), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)
-
-        if border_color and border_width > 0:
-            draw.rounded_rectangle((0, 0, w_s, h_s), radius=r_s, fill=border_color)
-            b_s = border_width * scale
-            draw.rounded_rectangle((b_s, b_s, w_s - b_s, h_s - b_s), radius=max(0, r_s - b_s), fill=bg_color)
-        else:
-            draw.rounded_rectangle((0, 0, w_s, h_s), radius=r_s, fill=bg_color)
-
-        rendered = ImageTk.PhotoImage(img.resize((width, height), Image.LANCZOS))
-        self._image_cache[key] = rendered
-        return rendered
-
-    def _style_ttk_for_theme(self):
-        t = self.THEMES[self.theme_mode]
-        style = ttk.Style()
-        try:
-            style.theme_use("clam")
-        except Exception:
-            pass
-
-        style.configure(
-            "Executive.TCombobox",
-            fieldbackground=t["INPUT_BG"],
-            background=t["PANEL_BG"],
-            foreground=t["TEXT_TITLE"],
-            arrowcolor=t["TEXT_MUTED"],
-            bordercolor=t["INPUT_BORDER"],
-            lightcolor=t["INPUT_BG"],
-            darkcolor=t["INPUT_BG"],
-            padding=5,
-        )
-        style.map(
-            "Executive.TCombobox",
-            fieldbackground=[("readonly", t["INPUT_BG"]), ("focus", t["PANEL_BG"])],
-            bordercolor=[("focus", t["INPUT_FOCUS"])],
-            arrowcolor=[("focus", t["BRAND_BLUE"])]
-        )
-
     # ------------------------------------------------------------------
-    # Master Application Scaffold (Sidebar + Topbar + Content Panel)
+    # Sidebar Navigation Component
     # ------------------------------------------------------------------
-    def _build_master_scaffold(self):
-        t = self.THEMES[self.theme_mode]
-
-        # 1. Sidebar Frame (Left column: 220px fixed)
-        self.sidebar_frame = tk.Frame(self.root, bg=t["SIDEBAR_BG"], width=220)
-        self.sidebar_frame.pack(side="left", fill="y")
-        self.sidebar_frame.pack_propagate(False)
-
-        # 2. Main Content Wrapper (Right column)
-        self.main_wrapper = tk.Frame(self.root, bg=t["CANVAS_BG"])
-        self.main_wrapper.pack(side="right", fill="both", expand=True)
-
-        # 3. Top Header Bar inside Main Wrapper
-        self.header_frame = tk.Frame(self.main_wrapper, bg=t["HEADER_BG"], height=52)
-        self.header_frame.pack(side="top", fill="x")
-        self.header_frame.pack_propagate(False)
-
-        header_divider = tk.Frame(self.main_wrapper, bg=t["HEADER_BORDER"], height=1)
-        header_divider.pack(side="top", fill="x")
-
-        # 4. Dynamic Content Area
-        self.content_container = tk.Frame(self.main_wrapper, bg=t["CANVAS_BG"])
-        self.content_container.pack(fill="both", expand=True, padx=28, pady=24)
-
-        # Populate persistent components
-        self._render_sidebar()
-        self._render_header()
-
-    def _render_sidebar(self):
-        """Builds clean professional enterprise sidebar."""
-        t = self.THEMES[self.theme_mode]
-        for w in self.sidebar_frame.winfo_children():
-            w.destroy()
-
-        # Brand Logo + Name Block
-        brand_box = tk.Frame(self.sidebar_frame, bg=t["SIDEBAR_BG"], padx=16, pady=20)
-        brand_box.pack(fill="x")
-
-        if self.logo_tk:
-            logo_l = tk.Label(brand_box, image=self.logo_tk, bg=t["SIDEBAR_BG"])
-            logo_l.pack(side="left", padx=(0, 10))
-
-        brand_text_box = tk.Frame(brand_box, bg=t["SIDEBAR_BG"])
-        brand_text_box.pack(side="left")
-
-        brand_name = tk.Label(
-            brand_text_box, text="ICDS AutoDesk",
-            font=("Segoe UI", 12, "bold"), fg="#FFFFFF", bg=t["SIDEBAR_BG"]
+    def _build_sidebar(self):
+        self.sidebar = ctk.CTkFrame(
+            self,
+            width=240,
+            corner_radius=0,
+            fg_color=("gray92", "#0B1120")
         )
-        brand_name.pack(anchor="w")
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(5, weight=1)
 
-        brand_edition = tk.Label(
-            brand_text_box, text="Professional Edition",
-            font=("Segoe UI", 8), fg=t["NAV_ITEM_INACTIVE_FG"], bg=t["SIDEBAR_BG"]
+        # Brand Header in Sidebar
+        brand_box = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+        brand_box.grid(row=0, column=0, padx=20, pady=(24, 20), sticky="w")
+
+        if self.logo_image:
+            logo_lbl = ctk.CTkLabel(brand_box, image=self.logo_image, text="")
+            logo_lbl.pack(side="left", padx=(0, 10))
+
+        title_box = ctk.CTkFrame(brand_box, fg_color="transparent")
+        title_box.pack(side="left")
+
+        app_title = ctk.CTkLabel(
+            title_box,
+            text="ICDS AutoDesk",
+            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold")
         )
-        brand_edition.pack(anchor="w")
+        app_title.pack(anchor="w")
 
-        # Subtle Divider
-        sep = tk.Frame(self.sidebar_frame, bg=t["SIDEBAR_BORDER"], height=1)
-        sep.pack(fill="x", padx=14, pady=(0, 14))
+        app_sub = ctk.CTkLabel(
+            title_box,
+            text="Executive Edition",
+            font=ctk.CTkFont(family="Segoe UI", size=10),
+            text_color=("gray45", "gray60")
+        )
+        app_sub.pack(anchor="w")
 
         # Navigation Label
-        nav_lbl = tk.Label(
-            self.sidebar_frame, text="CORE MODULES",
-            font=("Segoe UI", 8, "bold"), fg="#475569", bg=t["SIDEBAR_BG"]
+        nav_lbl = ctk.CTkLabel(
+            self.sidebar,
+            text="WORKSPACE MODULES",
+            font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
+            text_color=("gray50", "gray55")
         )
-        nav_lbl.pack(anchor="w", padx=20, pady=(0, 6))
+        nav_lbl.grid(row=1, column=0, padx=20, pady=(10, 8), sticky="w")
 
-        # Navigation Items
-        self.nav_widgets = {}
-        nav_items = [
-            ("home", "⊞", "Dashboard Overview"),
-            ("format", "◫", "Template Designer"),
-            ("report", "⎘", "Report Generator"),
-        ]
+        # Nav Buttons
+        self.nav_buttons = {}
 
-        for screen_id, icon_char, label_text in nav_items:
-            self._create_nav_item(screen_id, icon_char, label_text)
-
-        # Sidebar Bottom Section: System Status & Version
-        btm_box = tk.Frame(self.sidebar_frame, bg=t["SIDEBAR_BG"], padx=16, pady=16)
-        btm_box.pack(side="bottom", fill="x")
-
-        status_card = tk.Frame(btm_box, bg="#131C2E", padx=12, pady=10)
-        status_card.pack(fill="x")
-
-        v_lbl = tk.Label(
-            status_card, text=f"Installed: v{APP_VERSION}",
-            font=("Segoe UI", 8, "bold"), fg="#38BDF8", bg="#131C2E"
+        self.nav_buttons["home"] = ctk.CTkButton(
+            self.sidebar,
+            text="  ⊞   Dashboard",
+            anchor="w",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color=("gray20", "gray85"),
+            hover_color=("gray85", "#1E293B"),
+            command=lambda: self.navigate_to("home")
         )
-        v_lbl.pack(anchor="w")
+        self.nav_buttons["home"].grid(row=2, column=0, padx=14, pady=3, sticky="ew")
 
-        sync_lbl = tk.Label(
-            status_card, text="● Cloud Auto-Sync Ready",
-            font=("Segoe UI", 7), fg="#10B981", bg="#131C2E"
+        self.nav_buttons["format"] = ctk.CTkButton(
+            self.sidebar,
+            text="  ◫   Template Designer",
+            anchor="w",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color=("gray20", "gray85"),
+            hover_color=("gray85", "#1E293B"),
+            command=lambda: self.navigate_to("format")
         )
-        sync_lbl.pack(anchor="w", pady=(2, 0))
+        self.nav_buttons["format"].grid(row=3, column=0, padx=14, pady=3, sticky="ew")
 
-    def _create_nav_item(self, screen_id, icon_char, label_text):
-        t = self.THEMES[self.theme_mode]
-        is_active = (self.current_screen == screen_id)
-
-        item_bg = t["NAV_ITEM_ACTIVE_BG"] if is_active else t["SIDEBAR_BG"]
-        item_fg = t["NAV_ITEM_ACTIVE_FG"] if is_active else t["NAV_ITEM_INACTIVE_FG"]
-
-        item_frame = tk.Frame(self.sidebar_frame, bg=item_bg, cursor="hand2")
-        item_frame.pack(fill="x", padx=10, pady=2)
-
-        # Active indicator strip on left
-        indicator = tk.Frame(
-            item_frame,
-            bg=t["NAV_ITEM_INDICATOR"] if is_active else item_bg,
-            width=3, height=36
+        self.nav_buttons["report"] = ctk.CTkButton(
+            self.sidebar,
+            text="  ⎘   Report Generator",
+            anchor="w",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color=("gray20", "gray85"),
+            hover_color=("gray85", "#1E293B"),
+            command=lambda: self.navigate_to("report")
         )
-        indicator.pack(side="left")
+        self.nav_buttons["report"].grid(row=4, column=0, padx=14, pady=3, sticky="ew")
 
-        inner_box = tk.Frame(item_frame, bg=item_bg, padx=12, pady=8, cursor="hand2")
-        inner_box.pack(side="left", fill="both", expand=True)
-
-        icon_lbl = tk.Label(
-            inner_box, text=icon_char, font=("Segoe UI", 11),
-            fg=item_fg, bg=item_bg, cursor="hand2"
+        # Bottom System Card in Sidebar
+        status_card = ctk.CTkFrame(
+            self.sidebar,
+            corner_radius=10,
+            fg_color=("gray88", "#111827")
         )
-        icon_lbl.pack(side="left", padx=(0, 10))
+        status_card.grid(row=6, column=0, padx=14, pady=16, sticky="ew")
 
-        text_lbl = tk.Label(
-            inner_box, text=label_text, font=("Segoe UI", 9, "bold" if is_active else "normal"),
-            fg=item_fg, bg=item_bg, cursor="hand2"
+        ver_lbl = ctk.CTkLabel(
+            status_card,
+            text=f"Version: v{APP_VERSION}",
+            font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
+            text_color=("#2563EB", "#38BDF8")
         )
-        text_lbl.pack(side="left")
+        ver_lbl.pack(anchor="w", padx=12, pady=(10, 2))
 
-        def on_click():
-            self._navigate_to(screen_id)
-
-        def on_enter(_):
-            if self.current_screen != screen_id:
-                item_frame.configure(bg=t["NAV_ITEM_HOVER_BG"])
-                inner_box.configure(bg=t["NAV_ITEM_HOVER_BG"])
-                icon_lbl.configure(bg=t["NAV_ITEM_HOVER_BG"], fg="#FFFFFF")
-                text_lbl.configure(bg=t["NAV_ITEM_HOVER_BG"], fg="#FFFFFF")
-
-        def on_leave(_):
-            if self.current_screen != screen_id:
-                item_frame.configure(bg=t["SIDEBAR_BG"])
-                inner_box.configure(bg=t["SIDEBAR_BG"])
-                icon_lbl.configure(bg=t["SIDEBAR_BG"], fg=t["NAV_ITEM_INACTIVE_FG"])
-                text_lbl.configure(bg=t["SIDEBAR_BG"], fg=t["NAV_ITEM_INACTIVE_FG"])
-
-        for w in (item_frame, inner_box, icon_lbl, text_lbl, indicator):
-            w.bind("<Button-1>", lambda e: on_click())
-            w.bind("<Enter>", on_enter)
-            w.bind("<Leave>", on_leave)
-
-        self.nav_widgets[screen_id] = (item_frame, inner_box, icon_lbl, text_lbl, indicator)
-
-    def _render_header(self):
-        """Top bar with breadcrumb trail, update button, and theme switcher."""
-        t = self.THEMES[self.theme_mode]
-        for w in self.header_frame.winfo_children():
-            w.destroy()
-
-        h_inner = tk.Frame(self.header_frame, bg=t["HEADER_BG"], padx=20)
-        h_inner.pack(fill="both", expand=True)
-
-        # Breadcrumbs
-        bread_title = "Dashboard Overview"
-        if self.current_screen == "format":
-            bread_title = "Template Designer"
-        elif self.current_screen == "report":
-            bread_title = "Report Generator"
-        elif self.current_screen == "download":
-            bread_title = "Export Summary"
-
-        bread_box = tk.Frame(h_inner, bg=t["HEADER_BG"])
-        bread_box.pack(side="left", fill="y")
-
-        app_lbl = tk.Label(
-            bread_box, text="Workspace",
-            font=("Segoe UI", 9), fg=t["TEXT_FAINT"], bg=t["HEADER_BG"]
+        sync_lbl = ctk.CTkLabel(
+            status_card,
+            text="● Auto-Update Online",
+            font=ctk.CTkFont(family="Segoe UI", size=9),
+            text_color=("#059669", "#10B981")
         )
-        app_lbl.pack(side="left")
+        sync_lbl.pack(anchor="w", padx=12, pady=(0, 10))
 
-        slash_lbl = tk.Label(
-            bread_box, text=" / ",
-            font=("Segoe UI", 9), fg=t["TEXT_FAINT"], bg=t["HEADER_BG"]
+    # ------------------------------------------------------------------
+    # Content Area with Top Header
+    # ------------------------------------------------------------------
+    def _build_content_area(self):
+        self.content_wrapper = ctk.CTkFrame(self, corner_radius=0, fg_color=("gray96", "#0F172A"))
+        self.content_wrapper.grid(row=0, column=1, sticky="nsew")
+        self.content_wrapper.grid_rowconfigure(1, weight=1)
+        self.content_wrapper.grid_columnconfigure(0, weight=1)
+
+        # Header Navbar
+        self.header = ctk.CTkFrame(
+            self.content_wrapper,
+            height=54,
+            corner_radius=0,
+            fg_color=("white", "#1E293B")
         )
-        slash_lbl.pack(side="left")
+        self.header.grid(row=0, column=0, sticky="ew")
+        self.header.grid_columnconfigure(0, weight=1)
 
-        curr_lbl = tk.Label(
-            bread_box, text=bread_title,
-            font=("Segoe UI", 9, "bold"), fg=t["TEXT_TITLE"], bg=t["HEADER_BG"]
+        # Breadcrumbs on Header Left
+        self.breadcrumb_lbl = ctk.CTkLabel(
+            self.header,
+            text="Workspace / Dashboard",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            text_color=("gray20", "gray85")
         )
-        curr_lbl.pack(side="left")
+        self.breadcrumb_lbl.pack(side="left", padx=24, pady=12)
 
-        # Right Controls: Check Updates & Theme Mode
-        actions_box = tk.Frame(h_inner, bg=t["HEADER_BG"])
-        actions_box.pack(side="right", fill="y")
+        # Top Right Controls: Theme switch and Updates
+        controls_box = ctk.CTkFrame(self.header, fg_color="transparent")
+        controls_box.pack(side="right", padx=20, pady=10)
 
-        update_btn = tk.Button(
-            actions_box,
+        update_btn = ctk.CTkButton(
+            controls_box,
             text="↻ Check Updates",
-            font=("Segoe UI", 8, "bold"),
-            bg=t["BTN_SEC_BG"],
-            fg=t["BTN_SEC_FG"],
-            activebackground=t["BTN_SEC_HOVER"],
-            activeforeground=t["BTN_SEC_FG"],
-            relief="flat",
-            bd=0,
-            padx=10,
-            pady=3,
-            cursor="hand2",
-            command=lambda: check_for_updates_async(self.root, silent=False)
+            font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
+            width=120,
+            height=30,
+            corner_radius=6,
+            fg_color=("gray90", "gray25"),
+            text_color=("gray15", "gray95"),
+            hover_color=("gray80", "gray35"),
+            command=lambda: check_for_updates_async(self, silent=False)
         )
-        update_btn.pack(side="left", padx=(0, 12))
+        update_btn.pack(side="left", padx=(0, 10))
 
-        # Theme Switch Pill
-        self._render_theme_switch(actions_box)
-
-    def _render_theme_switch(self, parent):
-        t = self.THEMES[self.theme_mode]
-        sw_w, sw_h = 44, 22
-        knob_d = 16
-        pad = 3
-        canvas = tk.Canvas(
-            parent, width=sw_w, height=sw_h, bd=0,
-            highlightthickness=0, bg=t["HEADER_BG"], cursor="hand2"
+        # Modern Mode Switch
+        self.theme_switch = ctk.CTkSwitch(
+            controls_box,
+            text="Dark Mode",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            command=self._toggle_theme,
+            onvalue="Dark",
+            offvalue="Light"
         )
-        canvas.pack(side="right")
+        if ctk.get_appearance_mode() == "Dark":
+            self.theme_switch.select()
+        else:
+            self.theme_switch.deselect()
+        self.theme_switch.pack(side="left")
 
-        knob_x = pad if self.theme_mode == "light" else sw_w - knob_d - pad
-        track_color = "#E2E8F0" if self.theme_mode == "light" else "#334155"
+        # Dynamic Viewport Container
+        self.viewport = ctk.CTkScrollableFrame(
+            self.content_wrapper,
+            corner_radius=0,
+            fg_color="transparent"
+        )
+        self.viewport.grid(row=1, column=0, sticky="nsew", padx=24, pady=20)
+        self.viewport.grid_columnconfigure(0, weight=1)
 
-        canvas.create_oval(0, 0, sw_h, sw_h, fill=track_color, outline=track_color)
-        canvas.create_oval(sw_w - sw_h, 0, sw_w, sw_h, fill=track_color, outline=track_color)
-        canvas.create_rectangle(sw_h // 2, 0, sw_w - (sw_h // 2), sw_h, fill=track_color, outline=track_color)
+    def _toggle_theme(self):
+        new_mode = "Dark" if self.theme_switch.get() == "Dark" else "Light"
+        ctk.set_appearance_mode(new_mode)
 
-        knob_fill = "#FFFFFF" if self.theme_mode == "light" else "#F1F5F9"
-        canvas.create_oval(knob_x, pad, knob_x + knob_d, pad + knob_d, fill=knob_fill, outline="#CBD5E1")
-
-        def toggle(_):
-            self.theme_mode = "dark" if self.theme_mode == "light" else "light"
-            self._image_cache.clear()
-            self._rebuild_all_views()
-
-        canvas.bind("<Button-1>", toggle)
-
-    def _rebuild_all_views(self):
-        t = self.THEMES[self.theme_mode]
-        self.root.configure(bg=t["CANVAS_BG"])
-        self.sidebar_frame.configure(bg=t["SIDEBAR_BG"])
-        self.main_wrapper.configure(bg=t["CANVAS_BG"])
-        self.header_frame.configure(bg=t["HEADER_BG"])
-        self.content_container.configure(bg=t["CANVAS_BG"])
-
-        self._style_ttk_for_theme()
-        self._render_sidebar()
-        self._render_header()
-        self._render_current_screen()
-
-    def _navigate_to(self, screen_id):
+    def navigate_to(self, screen_id: str):
         self.current_screen = screen_id
-        self._render_sidebar()
-        self._render_header()
-        self._render_current_screen()
 
-    def _render_current_screen(self):
-        for w in self.content_container.winfo_children():
-            w.destroy()
+        # Update Sidebar Nav Active States
+        for key, btn in self.nav_buttons.items():
+            if key == screen_id:
+                btn.configure(
+                    fg_color=("#2563EB", "#1E3A8A"),
+                    text_color="#FFFFFF"
+                )
+            else:
+                btn.configure(
+                    fg_color="transparent",
+                    text_color=("gray20", "gray85")
+                )
 
-        if self.current_screen == "home":
-            self._build_home_view()
-        elif self.current_screen == "format":
-            self._build_format_view()
-        elif self.current_screen == "report":
-            self._build_report_view()
-        elif self.current_screen == "download":
-            self._build_download_view()
+        # Update Breadcrumb
+        titles = {
+            "home": "Workspace / Dashboard Overview",
+            "format": "Workspace / Monthly Template Designer",
+            "report": "Workspace / Report Calculation Engine",
+            "download": "Workspace / Document Export Ready",
+        }
+        self.breadcrumb_lbl.configure(text=titles.get(screen_id, "Workspace"))
 
-    # ------------------------------------------------------------------
-    # Screen 1: Executive Dashboard (Home View)
-    # ------------------------------------------------------------------
-    def _build_home_view(self):
-        t = self.THEMES[self.theme_mode]
+        # Clear and render screen
+        for widget in self.viewport.winfo_children():
+            widget.destroy()
 
-        # View Header
-        header_box = tk.Frame(self.content_container, bg=t["CANVAS_BG"])
-        header_box.pack(fill="x", pady=(0, 20))
-
-        v_title = tk.Label(
-            header_box, text="Integrated Child Development Services (ICDS)",
-            font=("Segoe UI", 16, "bold"), fg=t["TEXT_TITLE"], bg=t["CANVAS_BG"]
-        )
-        v_title.pack(anchor="w")
-
-        v_sub = tk.Label(
-            header_box,
-            text="Centralized desktop utility for automated monthly schedule generation and daily attendance-stock reconciliation.",
-            font=("Segoe UI", 10), fg=t["TEXT_MUTED"], bg=t["CANVAS_BG"]
-        )
-        v_sub.pack(anchor="w", pady=(3, 0))
-
-        # Workflow Cards Grid (2 Horizontal Enterprise Cards)
-        cards_frame = tk.Frame(self.content_container, bg=t["CANVAS_BG"])
-        cards_frame.pack(fill="x", pady=(0, 16))
-
-        # Card 1: Template Format Module
-        c1 = self._build_executive_card(
-            cards_frame,
-            icon_tag="01",
-            icon_color=t["BRAND_GREEN"],
-            title="Monthly Template Designer",
-            description="Generate pristine, standardized monthly Excel workbooks pre-formatted with calendar dates, Sundays, and regional public holidays.",
-            features=[
-                "Automatic date-to-day mapping",
-                "Optional Polio campaign Sunday scheduling",
-                "Built-in attendance & daily ration formulas"
-            ],
-            btn_text="Launch Template Designer ➔",
-            btn_color=t["BRAND_GREEN"],
-            btn_hover=t["BRAND_GREEN_HOVER"],
-            command=lambda: self._navigate_to("format")
-        )
-        c1.pack(side="left", fill="both", expand=True, padx=(0, 10))
-
-        # Card 2: Report Generator Module
-        c2 = self._build_executive_card(
-            cards_frame,
-            icon_tag="02",
-            icon_color=t["BRAND_BLUE"],
-            title="Report Generation Engine",
-            description="Process completed field data from Anganwadi workers, compute total monthly meal allocations, and generate certified distribution reports.",
-            features=[
-                "Automatic validation of beneficiary records",
-                "Accurate rice, dal, oil & egg balance calculation",
-                "Instant single-click Excel export"
-            ],
-            btn_text="Launch Report Generator ➔",
-            btn_color=t["BRAND_BLUE"],
-            btn_hover=t["BRAND_BLUE_HOVER"],
-            command=lambda: self._navigate_to("report")
-        )
-        c2.pack(side="right", fill="both", expand=True, padx=(10, 0))
-
-        # System Information Strip
-        info_panel = tk.Frame(self.content_container, bg=t["PANEL_BG"], padx=18, pady=12, highlightthickness=1, highlightbackground=t["PANEL_BORDER"])
-        info_panel.pack(fill="x", pady=(10, 0))
-
-        ip_left = tk.Frame(info_panel, bg=t["PANEL_BG"])
-        ip_left.pack(side="left")
-
-        tip_lbl = tk.Label(
-            ip_left, text="💡 Quick Tip:",
-            font=("Segoe UI", 9, "bold"), fg=t["TEXT_TITLE"], bg=t["PANEL_BG"]
-        )
-        tip_lbl.pack(side="left", padx=(0, 6))
-
-        tip_txt = tk.Label(
-            ip_left,
-            text="First design your monthly template in Module 01, fill beneficiary figures, then process in Module 02.",
-            font=("Segoe UI", 9), fg=t["TEXT_MUTED"], bg=t["PANEL_BG"]
-        )
-        tip_txt.pack(side="left")
-
-    def _build_executive_card(self, parent, icon_tag, icon_color, title, description, features, btn_text, btn_color, btn_hover, command):
-        """Constructs a clean professional card with subtle borders and clear typography."""
-        t = self.THEMES[self.theme_mode]
-
-        card = tk.Frame(
-            parent, bg=t["PANEL_BG"], padx=20, pady=20,
-            highlightthickness=1, highlightbackground=t["PANEL_BORDER"]
-        )
-
-        # Header tag + Title
-        h_box = tk.Frame(card, bg=t["PANEL_BG"])
-        h_box.pack(fill="x", pady=(0, 8))
-
-        tag_lbl = tk.Label(
-            h_box, text=f"MODULE {icon_tag}",
-            font=("Segoe UI", 8, "bold"), fg=icon_color, bg=t["PANEL_BG"]
-        )
-        tag_lbl.pack(anchor="w")
-
-        title_lbl = tk.Label(
-            h_box, text=title,
-            font=("Segoe UI", 12, "bold"), fg=t["TEXT_TITLE"], bg=t["PANEL_BG"]
-        )
-        title_lbl.pack(anchor="w", pady=(2, 0))
-
-        desc_lbl = tk.Label(
-            card, text=description,
-            font=("Segoe UI", 9), fg=t["TEXT_BODY"], bg=t["PANEL_BG"],
-            wraplength=270, justify="left"
-        )
-        desc_lbl.pack(anchor="w", pady=(0, 14))
-
-        # Bullet Feature Points
-        feat_box = tk.Frame(card, bg=t["PANEL_BG"])
-        feat_box.pack(fill="x", pady=(0, 16))
-
-        for feat in features:
-            f_row = tk.Frame(feat_box, bg=t["PANEL_BG"])
-            f_row.pack(fill="x", pady=2)
-
-            bullet = tk.Label(
-                f_row, text="✓", font=("Segoe UI", 8, "bold"),
-                fg=icon_color, bg=t["PANEL_BG"]
-            )
-            bullet.pack(side="left", padx=(0, 6))
-
-            f_txt = tk.Label(
-                f_row, text=feat, font=("Segoe UI", 8),
-                fg=t["TEXT_MUTED"], bg=t["PANEL_BG"],
-                wraplength=250, justify="left"
-            )
-            f_txt.pack(side="left")
-
-        # Action Button
-        btn = self._build_solid_button(
-            card, text=btn_text, command=command,
-            bg_color=btn_color, hover_color=btn_hover,
-            width=240, height=36
-        )
-        btn.pack(anchor="w", fill="x")
-
-        return card
+        if screen_id == "home":
+            self._render_home()
+        elif screen_id == "format":
+            self._render_format()
+        elif screen_id == "report":
+            self._render_report()
+        elif screen_id == "download":
+            self._render_download()
 
     # ------------------------------------------------------------------
-    # Screen 2: Template Designer View
+    # View 1: Executive Dashboard (Home)
     # ------------------------------------------------------------------
-    def _build_format_view(self):
-        t = self.THEMES[self.theme_mode]
-
-        # View Header
-        header_box = tk.Frame(self.content_container, bg=t["CANVAS_BG"])
-        header_box.pack(fill="x", pady=(0, 18))
-
-        v_title = tk.Label(
-            header_box, text="Monthly Report Template Designer",
-            font=("Segoe UI", 15, "bold"), fg=t["TEXT_TITLE"], bg=t["CANVAS_BG"]
+    def _render_home(self):
+        # Hero Banner
+        hero = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
         )
-        v_title.pack(anchor="w")
+        hero.pack(fill="x", pady=(0, 20))
 
-        v_sub = tk.Label(
-            header_box,
-            text="Configure month and year parameters to automatically produce an official ICDS blank data entry template.",
-            font=("Segoe UI", 9), fg=t["TEXT_MUTED"], bg=t["CANVAS_BG"]
+        hero_inner = ctk.CTkFrame(hero, fg_color="transparent")
+        hero_inner.pack(fill="x", padx=24, pady=20)
+
+        h_title = ctk.CTkLabel(
+            hero_inner,
+            text="Integrated Child Development Services (ICDS)",
+            font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"),
+            anchor="w"
         )
-        v_sub.pack(anchor="w", pady=(2, 0))
+        h_title.pack(anchor="w")
 
-        # Form Card Panel
-        form_panel = tk.Frame(
-            self.content_container, bg=t["PANEL_BG"], padx=24, pady=24,
-            highlightthickness=1, highlightbackground=t["PANEL_BORDER"]
+        h_desc = ctk.CTkLabel(
+            hero_inner,
+            text="Automated Excel template creation, holiday syncing & stock report engine for administrative field operations.",
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            text_color=("gray40", "gray65"),
+            anchor="w"
         )
-        form_panel.pack(fill="x", pady=(0, 16))
+        h_desc.pack(anchor="w", pady=(4, 0))
 
-        grid_box = tk.Frame(form_panel, bg=t["PANEL_BG"])
-        grid_box.pack(fill="x", pady=(0, 16))
+        # Workflow Module Cards (Two High-Density Cards side-by-side)
+        cards_container = ctk.CTkFrame(self.viewport, fg_color="transparent")
+        cards_container.pack(fill="x", pady=(0, 16))
+        cards_container.grid_columnconfigure((0, 1), weight=1)
+
+        # Card 1: Template Designer
+        c1 = ctk.CTkFrame(
+            cards_container,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
+        )
+        c1.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
+
+        c1_box = ctk.CTkFrame(c1, fg_color="transparent")
+        c1_box.pack(fill="both", expand=True, padx=22, pady=20)
+
+        badge1 = ctk.CTkLabel(
+            c1_box,
+            text="MODULE 01",
+            font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
+            text_color=("#059669", "#34D399")
+        )
+        badge1.pack(anchor="w")
+
+        c1_title = ctk.CTkLabel(
+            c1_box,
+            text="Monthly Template Designer",
+            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold")
+        )
+        c1_title.pack(anchor="w", pady=(2, 6))
+
+        c1_desc = ctk.CTkLabel(
+            c1_box,
+            text="Build standard monthly blank spreadsheets with auto-filled dates, public holidays, and optional polio campaign days.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray65"),
+            wraplength=280,
+            justify="left"
+        )
+        c1_desc.pack(anchor="w", pady=(0, 14))
+
+        # Bullet checkmarks
+        self._add_feature_bullet(c1_box, "Automatic Day-to-Date mapping")
+        self._add_feature_bullet(c1_box, "2026 Updated Regional Holiday List")
+        self._add_feature_bullet(c1_box, "Pre-formatted stock consumption formulas")
+
+        btn1 = ctk.CTkButton(
+            c1_box,
+            text="Launch Template Designer ➔",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=38,
+            corner_radius=8,
+            fg_color=("#059669", "#059669"),
+            hover_color=("#047857", "#047857"),
+            command=lambda: self.navigate_to("format")
+        )
+        btn1.pack(fill="x", pady=(16, 0))
+
+        # Card 2: Report Generator
+        c2 = ctk.CTkFrame(
+            cards_container,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
+        )
+        c2.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+
+        c2_box = ctk.CTkFrame(c2, fg_color="transparent")
+        c2_box.pack(fill="both", expand=True, padx=22, pady=20)
+
+        badge2 = ctk.CTkLabel(
+            c2_box,
+            text="MODULE 02",
+            font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
+            text_color=("#2563EB", "#60A5FA")
+        )
+        badge2.pack(anchor="w")
+
+        c2_title = ctk.CTkLabel(
+            c2_box,
+            text="Report Generator Engine",
+            font=ctk.CTkFont(family="Segoe UI", size=15, weight="bold")
+        )
+        c2_title.pack(anchor="w", pady=(2, 6))
+
+        c2_desc = ctk.CTkLabel(
+            c2_box,
+            text="Upload completed monthly attendance sheets to reconcile food stocks, compute monthly rations, and export clean reports.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray65"),
+            wraplength=280,
+            justify="left"
+        )
+        c2_desc.pack(anchor="w", pady=(0, 14))
+
+        self._add_feature_bullet(c2_box, "Automated Beneficiary Column Validation")
+        self._add_feature_bullet(c2_box, "Rice, Dal, Oil & Egg balance tracking")
+        self._add_feature_bullet(c2_box, "Single-click instant Excel generation")
+
+        btn2 = ctk.CTkButton(
+            c2_box,
+            text="Launch Report Generator ➔",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=38,
+            corner_radius=8,
+            fg_color=("#2563EB", "#2563EB"),
+            hover_color=("#1D4ED8", "#1D4ED8"),
+            command=lambda: self.navigate_to("report")
+        )
+        btn2.pack(fill="x", pady=(16, 0))
+
+        # Bottom operational tip bar
+        tip_box = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=10,
+            fg_color=("white", "#1E293B")
+        )
+        tip_box.pack(fill="x", pady=(8, 0))
+
+        tip_lbl = ctk.CTkLabel(
+            tip_box,
+            text="💡 Operational Flow: Design your monthly blank template in Module 01, populate Anganwadi attendance, then upload into Module 02.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray60")
+        )
+        tip_lbl.pack(padx=20, pady=12, anchor="w")
+
+    def _add_feature_bullet(self, parent, text: str):
+        row = ctk.CTkFrame(parent, fg_color="transparent")
+        row.pack(fill="x", pady=2)
+
+        icon = ctk.CTkLabel(
+            row,
+            text="✓",
+            font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
+            text_color=("#2563EB", "#38BDF8")
+        )
+        icon.pack(side="left", padx=(0, 6))
+
+        txt = ctk.CTkLabel(
+            row,
+            text=text,
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray30", "gray75")
+        )
+        txt.pack(side="left")
+
+    # ------------------------------------------------------------------
+    # View 2: Template Designer (Format)
+    # ------------------------------------------------------------------
+    def _render_format(self):
+        panel = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
+        )
+        panel.pack(fill="x", pady=(0, 20))
+
+        inner = ctk.CTkFrame(panel, fg_color="transparent")
+        inner.pack(fill="both", expand=True, padx=28, pady=24)
+
+        t_lbl = ctk.CTkLabel(
+            inner,
+            text="Report Template Designer",
+            font=ctk.CTkFont(family="Segoe UI", size=18, weight="bold")
+        )
+        t_lbl.pack(anchor="w")
+
+        s_lbl = ctk.CTkLabel(
+            inner,
+            text="Select the target month and year to generate a formatted monthly schedule template.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray65")
+        )
+        s_lbl.pack(anchor="w", pady=(2, 20))
+
+        # Inputs Grid
+        form_grid = ctk.CTkFrame(inner, fg_color="transparent")
+        form_grid.pack(fill="x", pady=(0, 16))
+        form_grid.grid_columnconfigure((0, 1), weight=1)
 
         # Month Selector
-        m_lbl = tk.Label(
-            grid_box, text="Target Month *",
-            font=("Segoe UI", 9, "bold"), fg=t["TEXT_TITLE"], bg=t["PANEL_BG"]
-        )
-        m_lbl.grid(row=0, column=0, sticky="w", pady=(0, 4), padx=(0, 20))
+        m_box = ctk.CTkFrame(form_grid, fg_color="transparent")
+        m_box.grid(row=0, column=0, sticky="ew", padx=(0, 15))
 
-        self.month_var = tk.StringVar()
+        ctk.CTkLabel(
+            m_box,
+            text="Target Month *",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold")
+        ).pack(anchor="w", pady=(0, 6))
+
         months = ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November", "December"]
-        month_cb = ttk.Combobox(
-            grid_box, textvariable=self.month_var, values=months,
-            state="readonly", width=22, style="Executive.TCombobox"
+        self.month_var = ctk.StringVar(value=months[0])
+        month_menu = ctk.CTkOptionMenu(
+            m_box,
+            variable=self.month_var,
+            values=months,
+            height=36,
+            corner_radius=8,
+            command=lambda _: self._update_polio_sundays()
         )
-        month_cb.grid(row=1, column=0, sticky="w", pady=(0, 16), padx=(0, 20))
-        month_cb.bind("<<ComboboxSelected>>", lambda e: self._update_polio_sundays())
+        month_menu.pack(fill="x")
 
         # Year Selector
-        y_lbl = tk.Label(
-            grid_box, text="Target Year *",
-            font=("Segoe UI", 9, "bold"), fg=t["TEXT_TITLE"], bg=t["PANEL_BG"]
-        )
-        y_lbl.grid(row=0, column=1, sticky="w", pady=(0, 4))
+        y_box = ctk.CTkFrame(form_grid, fg_color="transparent")
+        y_box.grid(row=0, column=1, sticky="ew", padx=(15, 0))
 
-        self.year_var = tk.StringVar()
+        ctk.CTkLabel(
+            y_box,
+            text="Target Year *",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold")
+        ).pack(anchor="w", pady=(0, 6))
+
         years = [str(y) for y in range(2024, 2101)]
-        year_cb = ttk.Combobox(
-            grid_box, textvariable=self.year_var, values=years,
-            state="readonly", width=22, style="Executive.TCombobox"
+        self.year_var = ctk.StringVar(value="2026")
+        year_menu = ctk.CTkOptionMenu(
+            y_box,
+            variable=self.year_var,
+            values=years,
+            height=36,
+            corner_radius=8,
+            command=lambda _: self._update_polio_sundays()
         )
-        year_cb.grid(row=1, column=1, sticky="w", pady=(0, 16))
-        year_cb.bind("<<ComboboxSelected>>", lambda e: self._update_polio_sundays())
+        year_menu.pack(fill="x")
 
         # Polio Campaign Checkbox
-        self.include_polio = tk.BooleanVar(value=False)
-        self.polio_check = tk.Checkbutton(
-            grid_box,
+        self.include_polio = ctk.BooleanVar(value=False)
+        self.polio_check = ctk.CTkCheckBox(
+            inner,
             text="Mark Special National Immunization / Polio Campaign Sunday",
             variable=self.include_polio,
-            command=self._toggle_polio_day,
-            fg=t["TEXT_TITLE"],
-            bg=t["PANEL_BG"],
-            selectcolor=t["PANEL_BG"],
-            activebackground=t["PANEL_BG"],
-            font=("Segoe UI", 9),
-            state="disabled",
-            cursor="hand2"
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            command=self._toggle_polio_drawer
         )
-        self.polio_check.grid(row=2, column=0, columnspan=2, sticky="w", pady=(0, 8))
+        self.polio_check.pack(anchor="w", pady=(10, 12))
 
-        # Dynamic Polio Sunday Dropdown Row
-        self.polio_container = tk.Frame(grid_box, bg=t["PANEL_BG"])
-        self.polio_day_label = tk.Label(
-            self.polio_container, text="Select Scheduled Sunday:",
-            font=("Segoe UI", 9, "bold"), fg=t["TEXT_TITLE"], bg=t["PANEL_BG"]
+        # Dynamic Polio Dropdown Drawer
+        self.polio_drawer = ctk.CTkFrame(
+            inner,
+            corner_radius=8,
+            fg_color=("gray95", "#0B1120")
         )
-        self.polio_day_label.pack(side="left", padx=(0, 10))
-
-        self.polio_day_var = tk.StringVar()
-        self.polio_day_cb = ttk.Combobox(
-            self.polio_container, textvariable=self.polio_day_var,
-            state="readonly", width=18, style="Executive.TCombobox"
+        self.polio_day_var = ctk.StringVar(value="")
+        self.polio_day_menu = ctk.CTkOptionMenu(
+            self.polio_drawer,
+            variable=self.polio_day_var,
+            values=["Select Sunday"],
+            height=34,
+            corner_radius=6
         )
-        self.polio_day_cb.pack(side="left")
 
-        # Action Buttons Row
-        actions_row = tk.Frame(form_panel, bg=t["PANEL_BG"])
-        actions_row.pack(fill="x", pady=(10, 0))
+        drawer_inner = ctk.CTkFrame(self.polio_drawer, fg_color="transparent")
+        drawer_inner.pack(fill="x", padx=16, pady=12)
 
-        gen_btn = self._build_solid_button(
-            actions_row, text="Generate Template Workbook", command=self._generate_format,
-            bg_color=t["BRAND_GREEN"], hover_color=t["BRAND_GREEN_HOVER"],
-            width=220, height=36
+        ctk.CTkLabel(
+            drawer_inner,
+            text="Select Polio Sunday Date:",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold")
+        ).pack(side="left", padx=(0, 14))
+
+        self.polio_day_menu.pack(side="left")
+
+        # Action Buttons
+        btn_box = ctk.CTkFrame(inner, fg_color="transparent")
+        btn_box.pack(fill="x", pady=(20, 0))
+
+        gen_btn = ctk.CTkButton(
+            btn_box,
+            text="Generate Monthly Template",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            width=220,
+            corner_radius=8,
+            fg_color=("#059669", "#059669"),
+            hover_color=("#047857", "#047857"),
+            command=self._execute_format_generation
         )
-        gen_btn.pack(side="left", padx=(0, 10))
+        gen_btn.pack(side="left", padx=(0, 12))
 
-        back_btn = self._build_outline_button(
-            actions_row, text="← Return to Dashboard",
-            command=lambda: self._navigate_to("home"),
-            width=160, height=36
+        back_btn = ctk.CTkButton(
+            btn_box,
+            text="← Return to Dashboard",
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            height=40,
+            width=160,
+            corner_radius=8,
+            fg_color=("gray85", "gray25"),
+            text_color=("gray15", "gray90"),
+            hover_color=("gray75", "gray35"),
+            command=lambda: self.navigate_to("home")
         )
         back_btn.pack(side="left")
 
-    def _toggle_polio_day(self):
+    def _toggle_polio_drawer(self):
         if self.include_polio.get():
             self._update_polio_sundays()
-            self.polio_container.grid(row=3, column=0, columnspan=2, sticky="w", pady=(4, 8))
+            self.polio_drawer.pack(fill="x", pady=(0, 16))
         else:
-            self.polio_container.grid_forget()
+            self.polio_drawer.pack_forget()
 
     def _update_polio_sundays(self):
         try:
-            month_ok = bool(getattr(self, "month_var", tk.StringVar()).get())
-            year_ok = bool(getattr(self, "year_var", tk.StringVar()).get())
-
-            if month_ok and year_ok:
-                self.polio_check.config(state="normal")
-            else:
-                self.polio_check.config(state="disabled")
-                self.include_polio.set(False)
-                self._toggle_polio_day()
-
-            if not (month_ok and year_ok):
+            m_name = self.month_var.get()
+            y_str = self.year_var.get()
+            if not m_name or not y_str:
                 return
 
             month_num = ["January", "February", "March", "April", "May", "June",
-                         "July", "August", "September", "October", "November", "December"].index(self.month_var.get()) + 1
-            year = int(self.year_var.get())
+                         "July", "August", "September", "October", "November", "December"].index(m_name) + 1
+            year = int(y_str)
 
             sundays = [str(day) for day in range(1, calendar.monthrange(year, month_num)[1] + 1)
                        if calendar.weekday(year, month_num, day) == 6]
 
-            self.polio_day_cb["values"] = sundays
             if sundays:
-                self.polio_day_cb.current(0)
+                self.polio_day_menu.configure(values=sundays)
+                self.polio_day_var.set(sundays[0])
         except Exception as e:
             print("Error updating Sundays:", e)
 
-    def _generate_format(self):
+    def _execute_format_generation(self):
         try:
             month_name = self.month_var.get()
-            if not month_name:
-                messagebox.showerror("Validation Notice", "Please select a target month.")
-                return
+            year = int(self.year_var.get())
+
             month_num = ["January", "February", "March", "April", "May", "June",
                          "July", "August", "September", "October", "November", "December"].index(month_name) + 1
-
-            if not self.year_var.get():
-                messagebox.showerror("Validation Notice", "Please select a target year.")
-                return
-            year = int(self.year_var.get())
 
             polio_day = int(self.polio_day_var.get()) if (self.include_polio.get() and self.polio_day_var.get()) else None
 
@@ -862,103 +696,127 @@ class ICDSAutoDeskApp:
                 self.generated_file_path = os.path.join(temp_folder, f)
 
             self.download_file_type = "Monthly Report Template"
-            self._navigate_to("download")
+            self.navigate_to("download")
         except Exception as e:
             messagebox.showerror("Generation Error", str(e))
 
     # ------------------------------------------------------------------
-    # Screen 3: Report Generator View
+    # View 3: Report Generator & Processor
     # ------------------------------------------------------------------
-    def _build_report_view(self):
-        t = self.THEMES[self.theme_mode]
-
-        # View Header
-        header_box = tk.Frame(self.content_container, bg=t["CANVAS_BG"])
-        header_box.pack(fill="x", pady=(0, 18))
-
-        v_title = tk.Label(
-            header_box, text="Report Generation & Calculation Engine",
-            font=("Segoe UI", 15, "bold"), fg=t["TEXT_TITLE"], bg=t["CANVAS_BG"]
+    def _render_report(self):
+        panel = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
         )
-        v_title.pack(anchor="w")
+        panel.pack(fill="x", pady=(0, 20))
 
-        v_sub = tk.Label(
-            header_box,
-            text="Upload completed monthly Excel data to reconcile food consumption, calculate stocks, and generate verified balance sheets.",
-            font=("Segoe UI", 9), fg=t["TEXT_MUTED"], bg=t["CANVAS_BG"]
+        inner = ctk.CTkFrame(panel, fg_color="transparent")
+        inner.pack(fill="both", expand=True, padx=28, pady=24)
+
+        t_lbl = ctk.CTkLabel(
+            inner,
+            text="Report Calculation & Stock Engine",
+            font=ctk.CTkFont(family="Segoe UI", size=18, weight="bold")
         )
-        v_sub.pack(anchor="w", pady=(2, 0))
+        t_lbl.pack(anchor="w")
 
-        # Main Panel
-        panel = tk.Frame(
-            self.content_container, bg=t["PANEL_BG"], padx=24, pady=24,
-            highlightthickness=1, highlightbackground=t["PANEL_BORDER"]
+        s_lbl = ctk.CTkLabel(
+            inner,
+            text="Upload your completed data sheet to reconcile rations, attendance, and stock balance figures.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray65")
         )
-        panel.pack(fill="x", pady=(0, 16))
+        s_lbl.pack(anchor="w", pady=(2, 20))
 
-        # File Dropzone Box
-        drop_box = tk.Frame(
-            panel, bg=t["INPUT_BG"], padx=24, pady=24,
-            highlightthickness=1, highlightbackground=t["INPUT_BORDER"]
+        # Modern Upload Dropzone Card
+        dropzone = ctk.CTkFrame(
+            inner,
+            corner_radius=10,
+            fg_color=("gray95", "#0B1120"),
+            border_width=1,
+            border_color=("gray80", "#1E293B")
         )
-        drop_box.pack(fill="x", pady=(0, 16))
+        dropzone.pack(fill="x", pady=(0, 20))
 
-        icon_file = tk.Label(
-            drop_box, text="⎘", font=("Segoe UI", 28),
-            fg=t["BRAND_BLUE"], bg=t["INPUT_BG"]
+        dz_inner = ctk.CTkFrame(dropzone, fg_color="transparent")
+        dz_inner.pack(fill="both", expand=True, padx=30, pady=24)
+
+        icon_lbl = ctk.CTkLabel(
+            dz_inner,
+            text="📁",
+            font=ctk.CTkFont(family="Segoe UI", size=32)
         )
-        icon_file.pack()
+        icon_lbl.pack()
 
-        inst_l = tk.Label(
-            drop_box, text="Select Completed Excel Data File (*.xlsx)",
-            font=("Segoe UI", 11, "bold"), fg=t["TEXT_TITLE"], bg=t["INPUT_BG"]
+        dz_title = ctk.CTkLabel(
+            dz_inner,
+            text="Select Completed Field Data File (*.xlsx)",
+            font=ctk.CTkFont(family="Segoe UI", size=13, weight="bold")
         )
-        inst_l.pack(pady=(4, 2))
+        dz_title.pack(pady=(4, 2))
 
-        inst_sub = tk.Label(
-            drop_box, text="File naming standard: Month_Year_Report_Format.xlsx (e.g. September_2025_Report_Format.xlsx)",
-            font=("Segoe UI", 8), fg=t["TEXT_MUTED"], bg=t["INPUT_BG"]
+        dz_desc = ctk.CTkLabel(
+            dz_inner,
+            text="Accepted Format: Month_Year_Report_Format.xlsx (e.g. September_2025_Report_Format.xlsx)",
+            font=ctk.CTkFont(family="Segoe UI", size=10),
+            text_color=("gray40", "gray65")
         )
-        inst_sub.pack(pady=(0, 12))
+        dz_desc.pack(pady=(0, 14))
 
-        browse_btn = self._build_solid_button(
-            drop_box, text="Browse Local Drive...",
-            command=lambda: self._select_file(drop_box, browse_btn),
-            bg_color=t["BRAND_BLUE"], hover_color=t["BRAND_BLUE_HOVER"],
-            width=180, height=32
+        browse_btn = ctk.CTkButton(
+            dz_inner,
+            text="Browse Files...",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=36,
+            width=160,
+            corner_radius=8,
+            fg_color=("#2563EB", "#2563EB"),
+            hover_color=("#1D4ED8", "#1D4ED8"),
+            command=self._select_report_file
         )
         browse_btn.pack()
 
-        # Selection Status Label placeholder
-        self.file_status_label = tk.Label(
-            drop_box, text="No file selected yet.",
-            font=("Segoe UI", 9, "italic"), fg=t["TEXT_FAINT"], bg=t["INPUT_BG"]
+        self.file_indicator = ctk.CTkLabel(
+            dz_inner,
+            text="No file uploaded yet.",
+            font=ctk.CTkFont(family="Segoe UI", size=11, slant="italic"),
+            text_color=("gray50", "gray55")
         )
-        self.file_status_label.pack(pady=(10, 0))
+        self.file_indicator.pack(pady=(10, 0))
 
         # Action Buttons
-        actions_row = tk.Frame(panel, bg=t["PANEL_BG"])
-        actions_row.pack(fill="x", pady=(8, 0))
+        btn_box = ctk.CTkFrame(inner, fg_color="transparent")
+        btn_box.pack(fill="x", pady=(10, 0))
 
-        proc_btn = self._build_solid_button(
-            actions_row, text="⚡ Process & Build Final Report",
-            command=self._generate_report_from_file,
-            bg_color=t["BRAND_BLUE"], hover_color=t["BRAND_BLUE_HOVER"],
-            width=240, height=36
+        process_btn = ctk.CTkButton(
+            btn_box,
+            text="Process & Calculate Final Report",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            width=240,
+            corner_radius=8,
+            fg_color=("#2563EB", "#2563EB"),
+            hover_color=("#1D4ED8", "#1D4ED8"),
+            command=self._execute_report_processing
         )
-        proc_btn.pack(side="left", padx=(0, 10))
+        process_btn.pack(side="left", padx=(0, 12))
 
-        back_btn = self._build_outline_button(
-            actions_row, text="← Return to Dashboard",
-            command=lambda: self._navigate_to("home"),
-            width=160, height=36
+        back_btn = ctk.CTkButton(
+            btn_box,
+            text="← Return to Dashboard",
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            height=40,
+            width=160,
+            corner_radius=8,
+            fg_color=("gray85", "gray25"),
+            text_color=("gray15", "gray90"),
+            hover_color=("gray75", "gray35"),
+            command=lambda: self.navigate_to("home")
         )
         back_btn.pack(side="left")
 
-    def _select_file(self, parent_widget, after_widget):
-        self.report_file_path = None
-        self.generated_file_path = None
-
+    def _select_report_file(self):
         path = filedialog.askopenfilename(filetypes=[("Excel Files", "*.xlsx")])
         if not path:
             return
@@ -968,22 +826,21 @@ class ICDSAutoDeskApp:
 
         if not re.match(pattern, filename):
             messagebox.showerror(
-                "File Validation Notice",
-                "Selected file does not match required ICDS format.\n\nExpected pattern:\nMonth_Year_Report_Format.xlsx\n(e.g., September_2025_Report_Format.xlsx)",
+                "Naming Standard Notice",
+                "Selected file name does not match required ICDS format.\n\nRequired Pattern:\nMonth_Year_Report_Format.xlsx\n(Example: September_2025_Report_Format.xlsx)",
             )
             return
 
         self.report_file_path = path
-        t = self.THEMES[self.theme_mode]
-        self.file_status_label.config(
-            text=f"✓ Ready: {filename}",
-            fg=t["BRAND_GREEN"],
-            font=("Segoe UI", 9, "bold")
+        self.file_indicator.configure(
+            text=f"✓ Verified: {filename}",
+            text_color=("#059669", "#34D399"),
+            font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold")
         )
 
-    def _generate_report_from_file(self):
+    def _execute_report_processing(self):
         if not getattr(self, "report_file_path", None):
-            messagebox.showerror("File Required", "Please select and verify an Excel data file first.")
+            messagebox.showerror("File Required", "Please select a completed Excel file first.")
             return
 
         try:
@@ -1017,84 +874,102 @@ class ICDSAutoDeskApp:
             for f in os.listdir(temp_folder):
                 self.generated_file_path = os.path.join(temp_folder, f)
 
-            self.download_file_type = "Reconciled Final Report"
-            self._navigate_to("download")
+            self.download_file_type = "Verified Final Report"
+            self.navigate_to("download")
         except Exception as e:
             messagebox.showerror("Processing Exception", str(e))
 
     # ------------------------------------------------------------------
-    # Screen 4: Download / Export Summary View
+    # View 4: Download / Export Summary Screen
     # ------------------------------------------------------------------
-    def _build_download_view(self):
-        t = self.THEMES[self.theme_mode]
-        file_desc = getattr(self, "download_file_type", "Document")
-
-        header_box = tk.Frame(self.content_container, bg=t["CANVAS_BG"])
-        header_box.pack(fill="x", pady=(0, 18))
-
-        v_title = tk.Label(
-            header_box, text="Processing Complete",
-            font=("Segoe UI", 15, "bold"), fg=t["TEXT_TITLE"], bg=t["CANVAS_BG"]
+    def _render_download(self):
+        panel = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=12,
+            fg_color=("white", "#1E293B")
         )
-        v_title.pack(anchor="w")
+        panel.pack(fill="x", pady=(0, 20))
 
-        v_sub = tk.Label(
-            header_box,
-            text=f"Your {file_desc} has been generated with verified formulas and formatted schemas.",
-            font=("Segoe UI", 9), fg=t["TEXT_MUTED"], bg=t["CANVAS_BG"]
+        inner = ctk.CTkFrame(panel, fg_color="transparent")
+        inner.pack(fill="both", expand=True, padx=28, pady=24)
+
+        t_lbl = ctk.CTkLabel(
+            inner,
+            text="Document Ready for Export",
+            font=ctk.CTkFont(family="Segoe UI", size=18, weight="bold")
         )
-        v_sub.pack(anchor="w", pady=(2, 0))
+        t_lbl.pack(anchor="w")
 
-        # Summary Card
-        card = tk.Frame(
-            self.content_container, bg=t["PANEL_BG"], padx=24, pady=24,
-            highlightthickness=1, highlightbackground=t["PANEL_BORDER"]
+        s_lbl = ctk.CTkLabel(
+            inner,
+            text=f"Your {self.download_file_type} has been computed and formatted successfully.",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray40", "gray65")
         )
-        card.pack(fill="x", pady=(0, 16))
+        s_lbl.pack(anchor="w", pady=(2, 20))
 
-        # Success Banner Box
-        banner = tk.Frame(
-            card, bg=t["SUCCESS_BG"], padx=18, pady=16,
-            highlightthickness=1, highlightbackground=t["SUCCESS_BORDER"]
+        # Success Banner
+        succ_card = ctk.CTkFrame(
+            inner,
+            corner_radius=10,
+            fg_color=("#ECFDF5", "#064E3B"),
+            border_width=1,
+            border_color=("#A7F3D0", "#065F46")
         )
-        banner.pack(fill="x", pady=(0, 20))
+        succ_card.pack(fill="x", pady=(0, 20))
 
-        fname = os.path.basename(self.generated_file_path) if self.generated_file_path else "Generated File.xlsx"
+        sc_inner = ctk.CTkFrame(succ_card, fg_color="transparent")
+        sc_inner.pack(fill="x", padx=20, pady=16)
 
-        s_head = tk.Label(
-            banner, text="✓ GENERATION COMPLETED SUCCESSFULLY",
-            font=("Segoe UI", 9, "bold"), fg=t["SUCCESS_FG"], bg=t["SUCCESS_BG"]
-        )
-        s_head.pack(anchor="w")
+        ctk.CTkLabel(
+            sc_inner,
+            text="✓ GENERATION COMPLETED SUCCESSFULLY",
+            font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
+            text_color=("#047857", "#6EE7B7")
+        ).pack(anchor="w")
 
-        s_f = tk.Label(
-            banner, text=f"Output File: {fname}",
-            font=("Segoe UI", 11, "bold"), fg=t["TEXT_TITLE"], bg=t["SUCCESS_BG"]
-        )
-        s_f.pack(anchor="w", pady=(4, 0))
+        fname = os.path.basename(self.generated_file_path) if self.generated_file_path else "Workbook.xlsx"
+        ctk.CTkLabel(
+            sc_inner,
+            text=f"File: {fname}",
+            font=ctk.CTkFont(family="Segoe UI", size=13, weight="bold"),
+            text_color=("#065F46", "#ECFDF5")
+        ).pack(anchor="w", pady=(4, 0))
 
         # Actions
-        actions_row = tk.Frame(card, bg=t["PANEL_BG"])
-        actions_row.pack(fill="x")
+        btn_box = ctk.CTkFrame(inner, fg_color="transparent")
+        btn_box.pack(fill="x", pady=(10, 0))
 
-        save_btn = self._build_solid_button(
-            actions_row, text="💾 Save / Export to Folder...",
-            command=self._download_file,
-            bg_color=t["BRAND_GREEN"], hover_color=t["BRAND_GREEN_HOVER"],
-            width=220, height=36
+        export_btn = ctk.CTkButton(
+            btn_box,
+            text="💾 Save to Local Drive...",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+            height=40,
+            width=220,
+            corner_radius=8,
+            fg_color=("#059669", "#059669"),
+            hover_color=("#047857", "#047857"),
+            command=self._save_output_file
         )
-        save_btn.pack(side="left", padx=(0, 10))
+        export_btn.pack(side="left", padx=(0, 12))
 
-        home_btn = self._build_outline_button(
-            actions_row, text="← Return to Dashboard",
-            command=lambda: self._navigate_to("home"),
-            width=180, height=36
+        home_btn = ctk.CTkButton(
+            btn_box,
+            text="← Return to Dashboard",
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            height=40,
+            width=160,
+            corner_radius=8,
+            fg_color=("gray85", "gray25"),
+            text_color=("gray15", "gray90"),
+            hover_color=("gray75", "gray35"),
+            command=lambda: self.navigate_to("home")
         )
         home_btn.pack(side="left")
 
-    def _download_file(self):
+    def _save_output_file(self):
         if not self.generated_file_path:
-            messagebox.showerror("Error", "No output file found to export.")
+            messagebox.showerror("Error", "No generated file found to export.")
             return
 
         folder = filedialog.askdirectory(title="Select Destination Folder")
@@ -1104,81 +979,11 @@ class ICDSAutoDeskApp:
         try:
             dest = os.path.join(folder, os.path.basename(self.generated_file_path))
             shutil.copy2(self.generated_file_path, dest)
-            messagebox.showinfo("Export Confirmed", f"File saved successfully to:\n\n{dest}")
+            messagebox.showinfo("Export Successful", f"File saved successfully to:\n\n{dest}")
         except Exception as e:
-            messagebox.showerror("File Error", str(e))
+            messagebox.showerror("Save Error", str(e))
 
         self._clear_temp_folders()
-
-    # ------------------------------------------------------------------
-    # Custom Modern Button Builders (Anti-aliased & Hover-responsive)
-    # ------------------------------------------------------------------
-    def _build_solid_button(self, parent, text, command, bg_color, hover_color, width=220, height=36):
-        normal_img = self._create_rounded_image(width, height, bg_color=bg_color, radius=6)
-        hover_img = self._create_rounded_image(width, height, bg_color=hover_color, radius=6)
-
-        wrapper = tk.Frame(parent, bg=parent["bg"], cursor="hand2")
-        lbl = tk.Label(wrapper, image=normal_img, bg=parent["bg"], bd=0, cursor="hand2")
-        lbl.image_normal = normal_img
-        lbl.image_hover = hover_img
-        lbl.pack()
-
-        txt = tk.Label(
-            lbl, text=text, font=("Segoe UI", 9, "bold"),
-            fg="#FFFFFF", bg=bg_color, cursor="hand2"
-        )
-        txt.place(relx=0.5, rely=0.5, anchor="center")
-
-        def on_enter(_):
-            lbl.configure(image=hover_img)
-            txt.configure(bg=hover_color)
-
-        def on_leave(_):
-            lbl.configure(image=normal_img)
-            txt.configure(bg=bg_color)
-
-        for w in (lbl, txt):
-            w.bind("<Enter>", on_enter)
-            w.bind("<Leave>", on_leave)
-            w.bind("<Button-1>", lambda e: command())
-
-        return wrapper
-
-    def _build_outline_button(self, parent, text, command, width=160, height=36):
-        t = self.THEMES[self.theme_mode]
-        normal_img = self._create_rounded_image(
-            width, height, bg_color=t["PANEL_BG"], border_color=t["BTN_SEC_BORDER"], border_width=1, radius=6
-        )
-        hover_img = self._create_rounded_image(
-            width, height, bg_color=t["BTN_SEC_HOVER"], border_color=t["BTN_SEC_BORDER"], border_width=1, radius=6
-        )
-
-        wrapper = tk.Frame(parent, bg=parent["bg"], cursor="hand2")
-        lbl = tk.Label(wrapper, image=normal_img, bg=parent["bg"], bd=0, cursor="hand2")
-        lbl.image_normal = normal_img
-        lbl.image_hover = hover_img
-        lbl.pack()
-
-        txt = tk.Label(
-            lbl, text=text, font=("Segoe UI", 9, "bold"),
-            fg=t["BTN_SEC_FG"], bg=t["PANEL_BG"], cursor="hand2"
-        )
-        txt.place(relx=0.5, rely=0.5, anchor="center")
-
-        def on_enter(_):
-            lbl.configure(image=hover_img)
-            txt.configure(bg=t["BTN_SEC_HOVER"])
-
-        def on_leave(_):
-            lbl.configure(image=normal_img)
-            txt.configure(bg=t["PANEL_BG"])
-
-        for w in (lbl, txt):
-            w.bind("<Enter>", on_enter)
-            w.bind("<Leave>", on_leave)
-            w.bind("<Button-1>", lambda e: command())
-
-        return wrapper
 
     def _clear_temp_folders(self):
         for folder in ("temp_generated", "temp_generated_report"):
@@ -1194,6 +999,5 @@ class ICDSAutoDeskApp:
 # Application Bootstrap
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = ICDSAutoDeskApp(root)
-    root.mainloop()
+    app = ICDSAutoDeskApp()
+    app.mainloop()

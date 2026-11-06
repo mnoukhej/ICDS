@@ -39,7 +39,7 @@ if exist installer_output rmdir /s /q installer_output
 
 REM Step 4: Run PyInstaller inside venv
 echo Building executable with PyInstaller...
-python -m PyInstaller --noconsole --onefile --icon=icon.ico --add-data "logo.png;." Application.py
+python -m PyInstaller Application.spec
 
 REM Step 5: Build Inno Setup Installer if ISCC is installed
 echo.
