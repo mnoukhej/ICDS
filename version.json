@@ -1,0 +1,8 @@
+{
+  "version": "4.0.0",
+  "name": "ICDS AutoDesk",
+  "release_url": "https://github.com/mnoukhej/ICDS/releases/latest",
+  "download_url": "https://github.com/mnoukhej/ICDS/releases/latest/download/ICDSAutoDesk_Setup_v4.0.0.exe",
+  "changelog": "ICDS AutoDesk v4.0.0 Release with automated build and in-app update support."
+}
+

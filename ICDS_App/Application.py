@@ -11,6 +11,7 @@ import shutil
 import os
 import sys
 from Main_Func import Format_Generator, Report_Generator_py
+from updater import check_for_updates_async, APP_VERSION
 
 
 # -----------------------------
@@ -103,6 +104,9 @@ class ICDSAutoDeskApp:
 
         # first screen
         self._show_home()
+
+        # Automatic background update check (silent)
+        self.root.after(2000, lambda: check_for_updates_async(self.root, silent=True))
 
     # -------------------------
     # Utilities - Resources/Style
@@ -202,7 +206,7 @@ class ICDSAutoDeskApp:
     def _footer(self):
         t = self.THEMES[self.theme_mode]
         lbl = tk.Label(self.root,
-                       text="© 2025 ICDS AutoDesk | Developed by Muhammad Noukhez",
+                       text=f"© 2026 ICDS AutoDesk v{APP_VERSION} | Developed by Muhammad Noukhez",
                        font=("Segoe UI", 8, "italic"),
                        fg=t["FG_MUTED"], bg=t["BG_ROOT"])
         lbl.pack(side="bottom", pady=8)
@@ -341,11 +345,28 @@ class ICDSAutoDeskApp:
     # Screens
     # -----------------------------------------------------------
     def _build_topbar(self):
-        # Top bar with theme switch (and optional logo small if you want)
+        # Top bar with theme switch and check updates button
         t = self.THEMES[self.theme_mode]
         top = tk.Frame(self.root, bg=t["BG_ROOT"])
-        top.pack(fill="x")
+        top.pack(fill="x", padx=10, pady=(4, 0))
         self._theme_switch(top)
+
+        update_btn = tk.Button(
+            top,
+            text=f"v{APP_VERSION} • Check Updates",
+            font=("Segoe UI", 8),
+            bg=t["CARD_BG"],
+            fg=t["FG_MUTED"],
+            activebackground=t["CARD_BG"],
+            activeforeground=t["FG_TEXT"],
+            bd=0,
+            padx=8,
+            pady=2,
+            relief="flat",
+            cursor="hand2",
+            command=lambda: check_for_updates_async(self.root, silent=False)
+        )
+        update_btn.pack(side="right", padx=5)
         return top
 
     def _show_home(self):

@@ -3,7 +3,9 @@
 ; Non-commercial use only
 
 #define MyAppName "ICDS AutoDesk"
-#define MyAppVersion "4.0"
+#ifndef MyAppVersion
+  #define MyAppVersion "4.0.0"
+#endif
 #define MyAppPublisher "Muhammad Noukhez"
 #define MyAppURL "https://www.CodeX404.in/"
 #define MyAppExeName "Application.exe"
@@ -17,7 +19,7 @@
 AppId={{2DBD61AC-7608-4603-B1F8-DABC639C5FB8}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} v{#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -26,10 +28,10 @@ DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 ; ===== Version / File Details =====
-VersionInfoDescription=Holidays list of 2026 updated in this version
+VersionInfoDescription=ICDS AutoDesk Installer
 VersionInfoProductName=ICDS AutoDesk
 VersionInfoCompany=Muhammad Noukhez
-VersionInfoCopyright=© 2024 ICDS AutoDesk
+VersionInfoCopyright=© 2026 ICDS AutoDesk
 VersionInfoVersion={#MyAppVersion}
 VersionInfoTextVersion={#MyAppVersion}
 
@@ -37,20 +39,21 @@ VersionInfoTextVersion={#MyAppVersion}
 ; on anything but x64 and Windows 11 on Arm.
 ArchitecturesAllowed=x64compatible
 ; "ArchitecturesInstallIn64BitMode=x64compatible" requests that the
-; install be done in "64-bit mode" on x64 or Windows 11 on Arm,
-; meaning it should use the native 64-bit Program Files directory and
-; the 64-bit view of the registry.
+; install be done in "64-bit mode" on x64 or Windows 11 on Arm.
 ArchitecturesInstallIn64BitMode=x64compatible
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\LICENSE.txt
-InfoBeforeFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_BEFORE.txt
-InfoAfterFile=D:\Codding\Projects\ICDS\ICDS_App\Txt_Files\README_AFTER.txt
-; Uncomment the following line to run in non administrative install mode (install for current user only).
-;PrivilegesRequired=lowest
-OutputDir=C:\Users\mnouk\Downloads
-OutputBaseFilename=ICDSAutoDesk Setup {#MyAppVersion}
-SetupIconFile=D:\Codding\Projects\ICDS\ICDS_App\icon.ico
+LicenseFile=Txt_Files\LICENSE.txt
+InfoBeforeFile=Txt_Files\README_BEFORE.txt
+InfoAfterFile=Txt_Files\README_AFTER.txt
+
+; Close running application when updating
+CloseApplications=yes
+RestartApplications=no
+
+OutputDir=installer_output
+OutputBaseFilename=ICDSAutoDesk_Setup_v{#MyAppVersion}
+SetupIconFile=icon.ico
 SolidCompression=yes
 WizardStyle=modern dynamic
 
@@ -61,8 +64,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Codding\Projects\ICDS\ICDS_App\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
@@ -76,4 +78,3 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-

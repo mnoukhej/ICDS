@@ -1,0 +1,114 @@
+name: Build and Release Desktop App
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+    paths:
+      - 'version.json'
+      - 'ICDS_App/**'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 4.0.0 or v4.0.0 - leave blank to use version.json)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Windows Executable & Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'ICDS_App/requirements.txt'
+
+      - name: Determine Version Tag
+        id: get_version
+        shell: pwsh
+        run: |
+          $manualInput = "${{ github.event.inputs.version }}".Trim()
+          $refName = "${{ github.ref_name }}"
+
+          if ($manualInput -ne "") {
+            $rawVer = $manualInput.TrimStart('v')
+          } elseif ($refName -match '^v[0-9]') {
+            $rawVer = $refName.TrimStart('v')
+          } else {
+            $verJson = Get-Content -Raw -Path "version.json" | ConvertFrom-Json
+            $rawVer = $verJson.version.TrimStart('v')
+          }
+
+          $tag = "v$rawVer"
+          Write-Host "Determined Application Version: $rawVer"
+          Write-Host "Determined Release Tag: $tag"
+
+          echo "APP_VER=$rawVer" >> $env:GITHUB_ENV
+          echo "RELEASE_TAG=$tag" >> $env:GITHUB_ENV
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ICDS_App/requirements.txt
+          pip install pyinstaller
+
+      - name: Build Executable with PyInstaller
+        working-directory: ./ICDS_App
+        run: |
+          python -m PyInstaller --noconsole --onefile --icon=icon.ico --add-data "logo.png;." Application.py
+
+      - name: Add Inno Setup Compiler to PATH
+        shell: pwsh
+        run: |
+          $innoPath = "C:\Program Files (x86)\Inno Setup 6"
+          if (Test-Path $innoPath) {
+            echo $innoPath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          } else {
+            Write-Host "Inno Setup not in default x86 folder, checking 64-bit..."
+            echo "C:\Program Files\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+
+      - name: Compile Inno Setup Installer
+        working-directory: ./ICDS_App
+        shell: pwsh
+        run: |
+          iscc /DMyAppVersion="${{ env.APP_VER }}" SetupBuilder.iss
+
+      - name: Verify Built Artifacts
+        shell: pwsh
+        run: |
+          Write-Host "Checking dist folder:"
+          Get-ChildItem -Path ICDS_App/dist
+
+          Write-Host "Checking installer output folder:"
+          Get-ChildItem -Path ICDS_App/installer_output
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ICDS AutoDesk ${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+          files: |
+            ICDS_App/installer_output/*.exe
+            ICDS_App/dist/Application.exe
+            version.json
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

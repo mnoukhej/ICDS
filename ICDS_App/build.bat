@@ -35,11 +35,38 @@ echo Cleaning old build files...
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 if exist __pycache__ rmdir /s /q __pycache__
+if exist installer_output rmdir /s /q installer_output
 
 REM Step 4: Run PyInstaller inside venv
-echo Building executable...
+echo Building executable with PyInstaller...
 python -m PyInstaller --noconsole --onefile --icon=icon.ico --add-data "logo.png;." Application.py
 
+REM Step 5: Build Inno Setup Installer if ISCC is installed
 echo.
-echo ✅ Build completed! Check the "dist" folder for your exe file.
+echo Checking for Inno Setup Compiler...
+set "ISCC_PATH=iscc"
+where iscc >nul 2>&1
+if %errorlevel% neq 0 (
+    if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" (
+        set "ISCC_PATH=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
+    ) else if exist "%ProgramFiles%\Inno Setup 6\ISCC.exe" (
+        set "ISCC_PATH=%ProgramFiles%\Inno Setup 6\ISCC.exe"
+    ) else (
+        echo Inno Setup compiler not found in standard paths. Skipping installer compilation.
+        goto finish
+    )
+)
+
+echo Compiling Inno Setup installer...
+"%ISCC_PATH%" SetupBuilder.iss
+
+:finish
+echo.
+echo ========================================================
+echo Build process completed!
+echo Executable: dist\Application.exe
+if exist installer_output (
+    echo Installer:  installer_output\
+)
+echo ========================================================
 pause
