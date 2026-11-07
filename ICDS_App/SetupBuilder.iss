@@ -4,7 +4,7 @@
 
 #define MyAppName "ICDS AutoDesk"
 #ifndef MyAppVersion
-  #define MyAppVersion "4.2.1"
+  #define MyAppVersion "4.2.2"
 #endif
 #define MyAppPublisher "Muhammad Noukhez"
 #define MyAppCompany "CodeX404 Solutions"
@@ -27,6 +27,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
+
+; Require Administrator privileges by default
+PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=none
 
 ; ===== Version / File Details =====
 VersionInfoDescription=ICDS AutoDesk Installer

@@ -21,13 +21,12 @@ System Requirements
 
 2. Installation Location
    - By default, ICDS AutoDesk will install in:
-     C:\Users\<YourUsername>\AppData\Local\ICDS AutoDesk
-   - This ensures you do not need Administrator rights.
-   - All temporary files will be stored in this location.
+     C:\Program Files\ICDS AutoDesk
+   - Temporary files will be stored in your local AppData folder.
 
 3. Permissions
-   - No admin privileges are required.
-   - The application will have full write access to its own folder.
+   - Administrator privileges are required by default for full system integration.
+   - Setup and application will automatically request elevated permissions.
 
 
 4. Internet Requirement
