@@ -30,7 +30,6 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 
 ; Require Administrator privileges by default
 PrivilegesRequired=admin
-PrivilegesRequiredOverridesAllowed=none
 
 ; ===== Version / File Details =====
 VersionInfoDescription=ICDS AutoDesk Installer
