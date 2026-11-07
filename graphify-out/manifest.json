@@ -1,0 +1,146 @@
+{
+  "Code/App.py": {
+    "mtime": 1793966450.165046,
+    "seen": 1794020372.4898624,
+    "ast_hash": "1de884e8cfd2333adc275bcde6eb2c75",
+    "semantic_hash": "1de884e8cfd2333adc275bcde6eb2c75"
+  },
+  "Code/Application.py": {
+    "mtime": 1793966450.166176,
+    "seen": 1794020372.4898624,
+    "ast_hash": "89e55dfe3820e2265df0d9c009fba80a",
+    "semantic_hash": "89e55dfe3820e2265df0d9c009fba80a"
+  },
+  "Code/Generate_Format.py": {
+    "mtime": 1793966450.1680236,
+    "seen": 1794020372.4898624,
+    "ast_hash": "14295dc1f27e8c75ea981847934b6f25",
+    "semantic_hash": "14295dc1f27e8c75ea981847934b6f25"
+  },
+  "Code/Generate_Report.py": {
+    "mtime": 1793966450.1680236,
+    "seen": 1794020372.4898624,
+    "ast_hash": "27aea6b81ffca5e675a64c8d142d5162",
+    "semantic_hash": "27aea6b81ffca5e675a64c8d142d5162"
+  },
+  "Code/Main_Func.py": {
+    "mtime": 1794019737.1828246,
+    "seen": 1794020372.4898624,
+    "ast_hash": "2f7ab6bc86e4b69f444ac2a91e3a4fc8",
+    "semantic_hash": "2f7ab6bc86e4b69f444ac2a91e3a4fc8"
+  },
+  "Code/food_ratios.py": {
+    "mtime": 1794019737.293149,
+    "seen": 1794020372.4898624,
+    "ast_hash": "53bea1001005195e85bc5e651c19aff6",
+    "semantic_hash": "53bea1001005195e85bc5e651c19aff6"
+  },
+  "Code/holiday_list.py": {
+    "mtime": 1793966450.172706,
+    "seen": 1794020372.4898624,
+    "ast_hash": "68bbacb37b584ca89fbc8b59328d27ee",
+    "semantic_hash": "68bbacb37b584ca89fbc8b59328d27ee"
+  },
+  "ICDS_App/Application.py": {
+    "mtime": 1794017133.798951,
+    "seen": 1794020372.4898624,
+    "ast_hash": "f8f82d468fa1beff5e2fca1ee63d9807",
+    "semantic_hash": "f8f82d468fa1beff5e2fca1ee63d9807"
+  },
+  "ICDS_App/Main_Func.py": {
+    "mtime": 1794019737.4544866,
+    "seen": 1794020372.4898624,
+    "ast_hash": "75348b5a2b735180f84f2603c6b2c9e0",
+    "semantic_hash": "75348b5a2b735180f84f2603c6b2c9e0"
+  },
+  "ICDS_App/food_ratios.py": {
+    "mtime": 1794019737.6219144,
+    "seen": 1794020372.4898624,
+    "ast_hash": "53bea1001005195e85bc5e651c19aff6",
+    "semantic_hash": "53bea1001005195e85bc5e651c19aff6"
+  },
+  "ICDS_App/holiday_list.py": {
+    "mtime": 1793966450.1889718,
+    "seen": 1794020372.4898624,
+    "ast_hash": "dc35a1a15d9c532bbc2477f7f6c7714c",
+    "semantic_hash": "dc35a1a15d9c532bbc2477f7f6c7714c"
+  },
+  "ICDS_App/updater.py": {
+    "mtime": 1794020868.4265482,
+    "seen": 1794020878.6968315,
+    "ast_hash": "6c71d224628ae6eb3543e6c1892d0e44",
+    "semantic_hash": ""
+  },
+  "update_tree.py": {
+    "mtime": 1793968356.7769315,
+    "seen": 1794020372.4898624,
+    "ast_hash": "baad322014c7a80f4e4d71717b9fa039",
+    "semantic_hash": "baad322014c7a80f4e4d71717b9fa039"
+  },
+  "version.json": {
+    "mtime": 1794020864.4090734,
+    "seen": 1794020878.6968315,
+    "ast_hash": "5d955673d89dc32e3dcb544785bc84c8",
+    "semantic_hash": ""
+  },
+  ".github/workflows/build-and-release.yml": {
+    "mtime": 1794017134.5472865,
+    "seen": 1794020372.4898624,
+    "ast_hash": "fa63a4a5f37a0aec63469c6f6d70b4cd",
+    "semantic_hash": "fa63a4a5f37a0aec63469c6f6d70b4cd"
+  },
+  ".github/workflows/update-readme.yml": {
+    "mtime": 1793966450.1615417,
+    "seen": 1794020372.4898624,
+    "ast_hash": "2dd64ea2c2dfca56a52cca1d68d58af5",
+    "semantic_hash": "2dd64ea2c2dfca56a52cca1d68d58af5"
+  },
+  "ICDS_App/Txt_Files/LICENSE.txt": {
+    "mtime": 1793966450.186262,
+    "seen": 1794020372.4898624,
+    "ast_hash": "20b90a0d3852ab70c5c047535ad638a8",
+    "semantic_hash": "20b90a0d3852ab70c5c047535ad638a8"
+  },
+  "ICDS_App/Txt_Files/README_AFTER.txt": {
+    "mtime": 1793966450.1874533,
+    "seen": 1794020372.4898624,
+    "ast_hash": "eb635b44187036a96e6ef58437707c37",
+    "semantic_hash": "eb635b44187036a96e6ef58437707c37"
+  },
+  "ICDS_App/Txt_Files/README_BEFORE.txt": {
+    "mtime": 1793966450.1879601,
+    "seen": 1794020372.4898624,
+    "ast_hash": "3a15c521016839cf2f702e214f2cd81f",
+    "semantic_hash": "3a15c521016839cf2f702e214f2cd81f"
+  },
+  "ICDS_App/requirements.txt": {
+    "mtime": 1794017134.8172486,
+    "seen": 1794020372.4898624,
+    "ast_hash": "c2021d5ee605893bcb72e1d478670bdb",
+    "semantic_hash": "c2021d5ee605893bcb72e1d478670bdb"
+  },
+  "README.md": {
+    "mtime": 1794019991.5438838,
+    "seen": 1794020372.4898624,
+    "ast_hash": "083d6645b90c643d520a30f873d4aacb",
+    "semantic_hash": "083d6645b90c643d520a30f873d4aacb"
+  },
+  "requirements.txt": {
+    "mtime": 1794017135.0700164,
+    "seen": 1794020372.4898624,
+    "ast_hash": "7306a4fd215feca3564ee3b703cdc166",
+    "semantic_hash": "7306a4fd215feca3564ee3b703cdc166"
+  },
+  "Code/logo.png": {
+    "mtime": 1793966450.1792338,
+    "seen": 1794020372.4898624,
+    "ast_hash": "0eb6fee8be03ff84cfd44a096192a88b",
+    "semantic_hash": "0eb6fee8be03ff84cfd44a096192a88b"
+  },
+  "ICDS_App/logo.png": {
+    "mtime": 1793966450.1969333,
+    "seen": 1794020372.4898624,
+    "ast_hash": "0eb6fee8be03ff84cfd44a096192a88b",
+    "semantic_hash": "0eb6fee8be03ff84cfd44a096192a88b"
+  }
+}
