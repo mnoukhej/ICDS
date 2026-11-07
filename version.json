@@ -1,8 +1,8 @@
 {
-  "version": "4.2.2",
+  "version": "4.2.3",
   "name": "ICDS AutoDesk",
   "release_url": "https://github.com/mnoukhej/ICDS/releases/latest",
-  "download_url": "https://github.com/mnoukhej/ICDS/releases/latest/download/ICDSAutoDesk_Setup_v4.2.2.exe",
-  "changelog": "ICDS AutoDesk v4.2.2: Enforce default Administrator execution permissions, disable UPX compression to eliminate DLL load errors, and target Windows Server 2022 build environment for universal OS compatibility."
+  "download_url": "https://github.com/mnoukhej/ICDS/releases/latest/download/ICDSAutoDesk_Setup_v4.2.3.exe",
+  "changelog": "ICDS AutoDesk v4.2.3: Rebuild with Python 3.11 for universal Windows DLL compatibility, enable default Administrator elevation, and resolve Inno Setup configuration."
 }
 

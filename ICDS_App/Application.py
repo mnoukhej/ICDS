@@ -1035,6 +1035,30 @@ class ICDSAutoDeskApp(ctk.CTk):
 # ----------------------------------------------------------------------
 # Application Bootstrap
 # ----------------------------------------------------------------------
+def ensure_admin():
+    """Ensure the application is running with administrative privileges on Windows."""
+    if os.name != "nt":
+        return
+    try:
+        import ctypes
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            if getattr(sys, "frozen", False):
+                executable = sys.executable
+                params = " ".join([f'"{arg}"' for arg in sys.argv[1:]])
+            else:
+                executable = sys.executable
+                params = " ".join([f'"{arg}"' for arg in sys.argv])
+
+            ret = ctypes.windll.shell32.ShellExecuteW(
+                None, "runas", executable, params, None, 1
+            )
+            if ret > 32:
+                sys.exit(0)
+    except Exception as e:
+        print(f"Admin elevation check failed: {e}")
+
+
 if __name__ == "__main__":
+    ensure_admin()
     app = ICDSAutoDeskApp()
     app.mainloop()
