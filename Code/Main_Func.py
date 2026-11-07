@@ -11,6 +11,13 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Alignment, PatternFill, Font, Border, Side
 
 from holiday_list import holidays
+from food_ratios import (
+    rice_days,
+    khichdi_days,
+    all_days,
+    food_ratios,
+    calculate_children_MorningSnacks,
+)
 
 
 # Format_Generator function to create the report format
@@ -267,26 +274,8 @@ def Report_Generator_py(file_path, folder_location):
     }
 
 
-    # === DEFINE RATIO SETTINGS ===
-    rice_days = ["Monday", "Wednesday", "Friday"]
-    khichdi_days = ["Tuesday", "Thursday", "Saturday", "Sunday"]
-    all_days = rice_days + khichdi_days  # Dynamically combines both lists
-
-    # Unified food ratios
-    food_ratios = {
-        "mothers": {
-            "rice": [(rice_days, 0.110), (khichdi_days, 0.075)],
-            "daal": [(khichdi_days, 0.030)],
-            "oil": [(all_days, 0.002)],
-            "salt": [(all_days, 0.002)]
-        },
-        "children": {
-            "rice": [(rice_days, 0.050), (khichdi_days, 0.075)],
-            "daal": [(khichdi_days, 0.030)],
-            "oil": [(all_days, 0.002)],
-            "salt": [(all_days, 0.002)]
-        }
-    }
+    # === RATIO SETTINGS & SCHEDULE LOADED FROM food_ratios.py ===
+    # (rice_days, khichdi_days, all_days, food_ratios, calculate_children_MorningSnacks are imported)
     
     
     
@@ -333,13 +322,7 @@ def Report_Generator_py(file_path, folder_location):
         return value
 
 
-    def calculate_children_MorningSnacks(row):
-        if pd.notna(row["total_children"]) and row["Days"] in ["Tuesday", "Thursday", "Saturday"]:
-            return round(row["total_children"] * 0.8)  # Apply rounding
-        else:
-            return "-"
-        
-        
+
     # Function to calculate Grand Total with special handling
     def calculate_grand_total(row):
         total_mothers = row["Total Mothers"]
