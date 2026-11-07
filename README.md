@@ -118,7 +118,7 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 | 👤 **Developer Name** | **Muhammad Noukhez** |
 | 🏢 **Company Name** | **CodeX404 Solutions** |
 | 🌐 **Official Website** | [**codex404solutions.com**](https://codex404solutions.com/) |
-| 📧 **Email** | [mnoukhej@gmail.com](mailto:mnoukhej@gmail.com) |
+| 📧 **Email** | [info@codex404solutions.com](mailto:info@codex404solutions.com) |
 | 🐙 **GitHub** | [@mnoukhej](https://github.com/mnoukhej) |
 | 💼 **LinkedIn** | [linkedin.com/in/mnoukhej](https://www.linkedin.com/in/mnoukhej/) |
 

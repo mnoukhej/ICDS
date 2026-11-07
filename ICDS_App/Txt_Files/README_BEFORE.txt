@@ -49,8 +49,7 @@ Organization: CodeX404 Solutions
 Website: https://codex404solutions.com
 
 For technical support, bug reports, or feature requests, please contact:
-Email: mnoukhej@codex404solutions.com
-       mnoukhej@gmail.com
+Email: info@codex404solutions.com
 
 Website: https://codex404solutions.com
 

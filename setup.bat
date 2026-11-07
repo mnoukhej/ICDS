@@ -138,7 +138,7 @@ if not exist ".github\workflows\update-readme.yml" (
         echo           GITHUB_TOKEN: ${{^ secrets.GITHUB_TOKEN ^}}
         echo         run: ^|
         echo           git config --global user.name "mnoukhej"
-        echo           git config --global user.email "mnoukhej@gmail.com"
+        echo           git config --global user.email "info@codex404solutions.com"
         echo.
         echo           git add README.md
         echo           git diff-index --quiet HEAD ^|^| git commit -m "🔄 Auto-update folder structure in README.md"
