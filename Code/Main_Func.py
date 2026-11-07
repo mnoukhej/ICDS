@@ -16,7 +16,8 @@ from food_ratios import (
     khichdi_days,
     all_days,
     food_ratios,
-    calculate_children_MorningSnacks,
+    morning_snacks_days,
+    morning_snacks_multiplier,
 )
 
 
@@ -321,7 +322,14 @@ def Report_Generator_py(file_path, folder_location):
             return re.sub(r'-+', '-', value)
         return value
 
-
+    def calculate_children_MorningSnacks(row):
+        """
+        Calculate morning snacks for children on scheduled days.
+        """
+        if pd.notna(row.get("total_children")) and row.get("Days") in morning_snacks_days:
+            return round(row["total_children"] * morning_snacks_multiplier)
+        else:
+            return "-"
 
     # Function to calculate Grand Total with special handling
     def calculate_grand_total(row):

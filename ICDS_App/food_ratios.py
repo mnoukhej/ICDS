@@ -1,8 +1,6 @@
 # food_ratios.py
 # Food allocation ratios and schedule configurations for ICDS Report Generation.
-# Edit this file anytime to modify days, ratios, or morning snacks formulas.
-
-import pandas as pd
+# Edit this file anytime to modify days or ratios.
 
 # ----------------------------------------------------------------------
 # 1. Schedule Days Configuration
@@ -31,17 +29,7 @@ food_ratios = {
 }
 
 # ----------------------------------------------------------------------
-# 3. Morning Snacks Configuration
+# 3. Morning Snacks Configuration Parameters
 # ----------------------------------------------------------------------
 morning_snacks_days = ["Tuesday", "Thursday", "Saturday"]
 morning_snacks_multiplier = 0.8
-
-
-def calculate_children_MorningSnacks(row):
-    """
-    Calculate morning snacks for children on scheduled days.
-    """
-    if pd.notna(row.get("total_children")) and row.get("Days") in morning_snacks_days:
-        return round(row["total_children"] * morning_snacks_multiplier)
-    else:
-        return "-"
