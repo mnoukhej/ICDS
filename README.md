@@ -46,6 +46,11 @@ It provides ready-to-use Excel formats, processes completed data, and generates 
 │   ├── setup.bat
 │   └── updater.py
 ├── README.md
+├── graphify-out
+│   ├── GRAPH_REPORT.md
+│   ├── graph.html
+│   ├── graph.json
+│   └── manifest.json
 ├── requirements.txt
 ├── setup.bat
 ├── update_tree.py
