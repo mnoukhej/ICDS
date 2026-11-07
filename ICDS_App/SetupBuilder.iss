@@ -4,7 +4,7 @@
 
 #define MyAppName "ICDS AutoDesk"
 #ifndef MyAppVersion
-  #define MyAppVersion "4.2.0"
+  #define MyAppVersion "4.2.1"
 #endif
 #define MyAppPublisher "Muhammad Noukhez"
 #define MyAppCompany "CodeX404 Solutions"

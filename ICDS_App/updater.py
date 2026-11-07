@@ -13,7 +13,7 @@ import urllib.error
 import customtkinter as ctk
 from tkinter import messagebox
 
-APP_VERSION = "4.2.0"
+APP_VERSION = "4.2.1"
 GITHUB_REPO = "mnoukhej/ICDS"
 RAW_VERSION_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/version.json"
 API_RELEASE_URL = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
