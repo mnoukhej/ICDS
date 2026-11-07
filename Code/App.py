@@ -37,7 +37,7 @@ class ICDSReportApp:
         """Show footer on all screens."""
         tk.Label(
             self.root,
-            text="© 2025 ICDS Report Generator | Develop by Muhammad Noukhez",
+            text="© 2026 ICDS Report Generator | Developed by Muhammad Noukhez • CodeX404 Solutions (codex404solutions.com)",
             font=("Arial", 8, "italic"),
             fg="gray",
             bg="#1e1e1e"

@@ -7,6 +7,7 @@
   #define MyAppVersion "4.2.0"
 #endif
 #define MyAppPublisher "Muhammad Noukhez"
+#define MyAppCompany "CodeX404 Solutions"
 #define MyAppURL "https://codex404solutions.com/"
 #define MyAppExeName "Application.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -20,7 +21,7 @@ AppId={{2DBD61AC-7608-4603-B1F8-DABC639C5FB8}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} v{#MyAppVersion}
-AppPublisher={#MyAppPublisher}
+AppPublisher={#MyAppPublisher} ({#MyAppCompany})
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
@@ -30,8 +31,8 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ; ===== Version / File Details =====
 VersionInfoDescription=ICDS AutoDesk Installer
 VersionInfoProductName=ICDS AutoDesk
-VersionInfoCompany=Muhammad Noukhez
-VersionInfoCopyright=© 2026 ICDS AutoDesk
+VersionInfoCompany=CodeX404 Solutions
+VersionInfoCopyright=© 2026 CodeX404 Solutions - Muhammad Noukhez
 VersionInfoVersion={#MyAppVersion}
 VersionInfoTextVersion={#MyAppVersion}
 

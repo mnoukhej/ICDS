@@ -141,7 +141,7 @@ class ICDSReportApp:
 
     def _footer(self):
         lbl = tk.Label(self.root,
-                       text="© 2025 ICDS Report Generator | Develop by Muhammad Noukhez",
+                       text="© 2026 ICDS Report Generator | Developed by Muhammad Noukhez • CodeX404 Solutions (codex404solutions.com)",
                        font=("Segoe UI", 8, "italic"),
                        fg=self.FG_MUTED, bg=self.BG_ROOT)
         lbl.pack(side="bottom", pady=8)

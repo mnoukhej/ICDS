@@ -210,7 +210,17 @@ class ICDSAutoDeskApp(ctk.CTk):
             font=ctk.CTkFont(family="Segoe UI", size=9),
             text_color=("#059669", "#10B981")
         )
-        sync_lbl.pack(anchor="w", padx=12, pady=(0, 10))
+        sync_lbl.pack(anchor="w", padx=12, pady=(0, 6))
+
+        # Developer & Organization Attribution
+        dev_lbl = ctk.CTkLabel(
+            status_card,
+            text="Dev: Muhammad Noukhez\nOrg: CodeX404 Solutions\ncodex404solutions.com",
+            font=ctk.CTkFont(family="Segoe UI", size=9),
+            text_color=("gray40", "gray55"),
+            justify="left"
+        )
+        dev_lbl.pack(anchor="w", padx=12, pady=(0, 10))
 
     # ------------------------------------------------------------------
     # Content Area with Top Header
@@ -481,6 +491,33 @@ class ICDSAutoDeskApp(ctk.CTk):
             text_color=("gray40", "gray60")
         )
         tip_lbl.pack(padx=20, pady=12, anchor="w")
+
+        # Developer & Organization Credit Banner
+        credit_box = ctk.CTkFrame(
+            self.viewport,
+            corner_radius=10,
+            fg_color=("white", "#1E293B")
+        )
+        credit_box.pack(fill="x", pady=(10, 0))
+
+        credit_inner = ctk.CTkFrame(credit_box, fg_color="transparent")
+        credit_inner.pack(fill="x", padx=20, pady=10)
+
+        credit_title = ctk.CTkLabel(
+            credit_inner,
+            text="👨‍💻 Developer & Organization Credit",
+            font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
+            text_color=("#2563EB", "#38BDF8")
+        )
+        credit_title.pack(anchor="w")
+
+        credit_detail = ctk.CTkLabel(
+            credit_inner,
+            text="Engineered & Maintained by Muhammad Noukhez  •  Organization: CodeX404 Solutions  •  Website: codex404solutions.com",
+            font=ctk.CTkFont(family="Segoe UI", size=11),
+            text_color=("gray35", "gray70")
+        )
+        credit_detail.pack(anchor="w", pady=(2, 0))
 
     def _add_feature_bullet(self, parent, text: str):
         row = ctk.CTkFrame(parent, fg_color="transparent")

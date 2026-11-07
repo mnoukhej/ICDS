@@ -27,4 +27,5 @@ dist/
 graphify-out/cache/
 graphify-out/.graphify_*
 graphify-out/cost.json
+graphify-out/20*/
 

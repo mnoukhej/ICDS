@@ -1,14 +1,19 @@
 # Graph Report - ICDS  (2026-11-07)
 
 ## Corpus Check
-- 24 files · ~121,528 words
+- 15 files · ~121,679 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 14 file(s) not represented in the graph (top: (none) 5, .ipynb 3, .bat 3)
 
 ## Summary
 - 195 nodes · 317 edges · 19 communities (7 shown, 12 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.85)
-- Token cost: 1,200 input · 850 output
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `7a6ecc96`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - CustomTkinter Modern UI & Widgets
@@ -81,7 +86,7 @@ Cohesion: 0.33
 Nodes (9): Auto-Update Folder Tree Workflow, format_project_name(), generate_tree(), get_repo_name(), update_commands(), update_developer_credit(), update_readme(), update_title() (+1 more)
 
 ## Knowledge Gaps
-- **13 isolated node(s):** `CI Build & Release Workflow`, `Auto-Update Folder Tree Workflow`, `MIT License`, `Post-Installation Guide`, `Pre-Installation Prerequisites` (+8 more)
+- **13 isolated node(s):** `ICDS AutoDesk Overview`, `ICDS App Runtime Dependencies`, `Root Requirements Specification`, `MIT License`, `Post-Installation Guide` (+8 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 85 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -92,7 +97,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.237) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `Report_Generator_py()` (e.g. with `assign_food_days()` and `calculate_children_MorningSnacks()`) actually correct?**
   _`Report_Generator_py()` has 7 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `CI Build & Release Workflow`, `Auto-Update Folder Tree Workflow`, `MIT License` to the rest of the system?**
+- **What connects `ICDS AutoDesk Overview`, `ICDS App Runtime Dependencies`, `Root Requirements Specification` to the rest of the system?**
   _13 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Legacy Tkinter Desktop App` be split into smaller, more focused modules?**
   _Cohesion score 0.1422924901185771 - nodes in this community are weakly interconnected._

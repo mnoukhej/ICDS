@@ -1,7 +1,7 @@
 ICDS AutoDesk - License Agreement
 --------------------------------
 This software is provided as-is without any warranties.
-The author, Muhammad Noukhez, is not responsible for any
+The author, Muhammad Noukhez (CodeX404 Solutions), is not responsible for any
 damages caused by the use of this software.
 
 You may use this software for personal or educational purposes.

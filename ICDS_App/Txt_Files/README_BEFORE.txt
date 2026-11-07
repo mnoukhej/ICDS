@@ -42,13 +42,17 @@ System Requirements
 4. Launch ICDS AutoDesk from the Desktop shortcut or Start Menu.
 
 ------------------------------------------------------------
-📩 Support
+👨‍💻 Developer Credit & Support
 ------------------------------------------------------------
+Developer: Muhammad Noukhez
+Organization: CodeX404 Solutions
+Website: https://codex404solutions.com
+
 For technical support, bug reports, or feature requests, please contact:
-Email: mnoukhej@codex404.in
+Email: mnoukhej@codex404solutions.com
        mnoukhej@gmail.com
 
-Website: https://codex404.in
+Website: https://codex404solutions.com
 
 ------------------------------------------------------------
 ✅ Once you have read this information and your system meets the requirements, click Next to continue the installation.

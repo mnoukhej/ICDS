@@ -6,7 +6,14 @@ You can launch the program from:
 
 Default save folder for reports: Downloads
 
-For help and updates, visit:
-https://www.codex404.in/
+------------------------------------------------------------
+👨‍💻 Developer Credit:
+Developer: Muhammad Noukhez
+Organization: CodeX404 Solutions
+Website: https://codex404solutions.com
+------------------------------------------------------------
+
+For help, documentation, and updates, visit:
+https://codex404solutions.com/
 
 Thank you for installing ICDS AutoDesk!
